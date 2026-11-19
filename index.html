@@ -1,0 +1,863 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#071b15">
+<title>RepoPilot — GitHub Workspace</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #07130f;
+  --panel: #0d2019;
+  --panel2: #10281f;
+  --border: #1c3b2e;
+  --green: #40c68b;
+  --muted: #91a99b;
+  --white: #edf7f0;
+  --gold: #d7b77b;
+  --danger: #e47d7d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 80% 0%, #153d2b55, transparent 40%),
+    var(--bg);
+  color: var(--white);
+  font-family: "DM Sans", sans-serif;
+  min-height: 100vh;
+}
+
+button, input, select { font: inherit; }
+
+button { cursor: pointer; }
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 245px;
+  background: #091a13;
+  border-right: 1px solid var(--border);
+  padding: 30px 19px;
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  flex-shrink: 0;
+}
+
+.brand {
+  font: 800 29px "Alegreya", serif;
+  letter-spacing: -.8px;
+}
+
+.brand span { color: var(--green); }
+
+.brand-sub {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.nav-label {
+  color: #6e8d7b;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 12px 9px;
+}
+
+.nav-item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: #a7bdb0;
+  text-align: left;
+  padding: 12px;
+  border-radius: 9px;
+  margin-bottom: 5px;
+  font-size: 13px;
+  transition: .2s;
+}
+
+.nav-item:hover, .nav-item.active {
+  background: #18372a;
+  color: #70e0a8;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  border: 1px solid var(--border);
+  padding: 15px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px clamp(17px, 4vw, 55px);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 44px;
+}
+
+.breadcrumb {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status {
+  color: var(--green);
+  font-size: 11px;
+  border: 1px solid #285a42;
+  background: #10291d;
+  border-radius: 30px;
+  padding: 8px 12px;
+}
+
+h1 {
+  font: 700 clamp(34px, 5vw, 48px) "Alegreya", serif;
+  margin: 0;
+  letter-spacing: -.8px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 7px;
+}
+
+.connect-panel {
+  margin-top: 27px;
+  background: linear-gradient(115deg, #123528, #0c2119);
+  border: 1px solid #285b41;
+  border-radius: 16px;
+  padding: 23px;
+}
+
+.panel-heading {
+  font: 600 21px "Alegreya", serif;
+  margin-bottom: 6px;
+}
+
+.panel-description {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+.connect-row {
+  display: flex;
+  gap: 10px;
+}
+
+.input {
+  background: #071810;
+  color: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 13px 15px;
+  outline: none;
+  min-width: 0;
+}
+
+.input:focus { border-color: var(--green); }
+
+#username { flex: 1; }
+
+.primary {
+  background: var(--green);
+  color: #062015;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 19px;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.primary:hover {
+  background: #65e3a7;
+  transform: translateY(-1px);
+}
+
+.message {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+  min-height: 17px;
+}
+
+.message.error { color: var(--danger); }
+
+.profile {
+  display: none;
+  margin-top: 25px;
+  align-items: center;
+  gap: 17px;
+  padding: 19px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 13px;
+}
+
+.avatar {
+  width: 67px;
+  height: 67px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  object-fit: cover;
+}
+
+.profile-name {
+  font: 700 23px "Alegreya", serif;
+}
+
+.profile-login {
+  color: var(--green);
+  font-size: 12px;
+}
+
+.profile-bio {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.profile-link {
+  margin-left: auto;
+  color: var(--green);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 13px;
+  margin-top: 22px;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 18px;
+  border-radius: 12px;
+  min-width: 0;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.stat-value {
+  font: 700 29px "Alegreya", serif;
+  margin-top: 9px;
+  overflow-wrap: anywhere;
+}
+
+.stat-note {
+  color: #668d78;
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 38px 0 17px;
+}
+
+.section-heading h2 {
+  font: 700 25px "Alegreya", serif;
+  margin: 0;
+}
+
+.repo-count {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 17px;
+}
+
+.filters input { flex: 1; }
+
+.filters select {
+  background: var(--panel);
+  color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  max-width: 180px;
+}
+
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.repo {
+  background: linear-gradient(145deg, #10251c, #0b1a13);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 19px;
+  transition: .2s;
+  min-width: 0;
+}
+
+.repo:hover {
+  border-color: #448c67;
+  transform: translateY(-2px);
+}
+
+.repo-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.repo-title {
+  color: #78dca5;
+  text-decoration: none;
+  font: 700 19px "Alegreya", serif;
+  overflow-wrap: anywhere;
+}
+
+.repo-title:hover { color: white; }
+
+.visibility {
+  font-size: 9px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 4px 7px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.repo-description {
+  color: #9bb0a3;
+  font-size: 12px;
+  line-height: 1.6;
+  min-height: 39px;
+  margin: 12px 0 17px;
+  overflow-wrap: anywhere;
+}
+
+.repo-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.language-dot {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-radius: 50%;
+  background: var(--green);
+  margin-right: 5px;
+}
+
+.empty {
+  grid-column: 1/-1;
+  padding: 45px 20px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.loading { opacity: .55; pointer-events: none; }
+
+footer {
+  border-top: 1px solid var(--border);
+  padding-top: 18px;
+  margin-top: 50px;
+  color: #668171;
+  font-size: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+@media(max-width:850px) {
+  .sidebar { width: 190px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media(max-width:600px) {
+  .sidebar { display: none; }
+  .main { padding: 20px 15px; }
+  .repo-grid { grid-template-columns: 1fr; }
+  .connect-row { flex-direction: column; }
+  .profile { flex-wrap: wrap; }
+  .profile-link { margin-left: 0; }
+  .filters { flex-direction: column; }
+  .filters select { max-width: none; }
+  .topbar { margin-bottom: 32px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <div>
+    <div class="brand">Repo<span>Pilot</span></div>
+    <div class="brand-sub">Developer workspace</div>
+  </div>
+
+  <div>
+    <div class="nav-label">Workspace</div>
+    <button class="nav-item active" onclick="showSection('overview')">◈ &nbsp; Overview</button>
+    <button class="nav-item" onclick="showSection('repositories')">▤ &nbsp; Repositories</button>
+    <button class="nav-item" onclick="showSection('languages')">⌘ &nbsp; Languages</button>
+  </div>
+
+  <div>
+    <div class="nav-label">Account</div>
+    <button class="nav-item" onclick="connectFocus()">↗ &nbsp; Connect GitHub</button>
+    <button class="nav-item" onclick="disconnect()">⏻ &nbsp; Disconnect</button>
+  </div>
+
+  <div class="sidebar-bottom">
+    REPOPILOT V1.0<br>
+    GitHub public API<br>
+    Local browser workspace
+  </div>
+</aside>
+
+<main class="main">
+
+  <div class="topbar">
+    <div class="breadcrumb">Workspace / Dashboard</div>
+    <div class="status" id="connectionStatus">● Not connected</div>
+  </div>
+
+  <header>
+    <h1>Your development,<br>under one roof.</h1>
+    <div class="subtitle">A central workspace for your GitHub projects.</div>
+  </header>
+
+  <section class="connect-panel" id="connectPanel">
+    <div class="panel-heading">Connect your GitHub profile</div>
+    <div class="panel-description">
+      Enter a GitHub username to import public profile and repository information.
+    </div>
+    <div class="connect-row">
+      <input class="input" id="username" placeholder="GitHub username" value="rbakhtiar">
+      <button class="primary" id="connectButton" onclick="connectGitHub()">Connect account ↗</button>
+    </div>
+    <div class="message" id="message">No password or access token required for public repositories.</div>
+  </section>
+
+  <section class="profile" id="profile">
+    <img class="avatar" id="avatar" alt="GitHub avatar">
+    <div>
+      <div class="profile-name" id="profileName"></div>
+      <div class="profile-login" id="profileLogin"></div>
+      <div class="profile-bio" id="profileBio"></div>
+    </div>
+    <a class="profile-link" id="profileLink" target="_blank" rel="noopener">View profile ↗</a>
+  </section>
+
+  <section class="stats" id="stats">
+    <div class="stat">
+      <div class="stat-label">Repositories loaded</div>
+      <div class="stat-value" id="repoStat">—</div>
+      <div class="stat-note">Public repositories</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total stars</div>
+      <div class="stat-value" id="starStat">—</div>
+      <div class="stat-note">Across loaded repositories</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Total forks</div>
+      <div class="stat-value" id="forkStat">—</div>
+      <div class="stat-note">Across loaded repositories</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Languages</div>
+      <div class="stat-value" id="languageStat">—</div>
+      <div class="stat-note">Detected primary languages</div>
+    </div>
+  </section>
+
+  <section id="repositories">
+    <div class="section-heading">
+      <h2>Repositories</h2>
+      <span class="repo-count" id="repoCount">Awaiting connection</span>
+    </div>
+
+    <div class="filters">
+      <input class="input" id="search" placeholder="Search repositories..." oninput="renderRepos()">
+      <select id="languageFilter" onchange="renderRepos()">
+        <option value="">All languages</option>
+      </select>
+      <select id="sort" onchange="renderRepos()">
+        <option value="updated">Recently updated</option>
+        <option value="stars">Most stars</option>
+        <option value="forks">Most forks</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+
+    <div class="repo-grid" id="repoGrid">
+      <div class="empty">
+        Connect your GitHub profile to see your repositories here.
+      </div>
+    </div>
+  </section>
+
+  <section id="languages">
+    <div class="section-heading">
+      <h2>Language distribution</h2>
+    </div>
+    <div class="stat" id="languagePanel">
+      <div class="stat-label">Your programming ecosystem</div>
+      <div id="languageList" style="margin-top:15px;color:var(--muted);font-size:12px">
+        Connect GitHub to calculate your language distribution.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>RepoPilot — Built for developers.</span>
+    <span>Powered by GitHub REST API</span>
+  </footer>
+
+</main>
+</div>
+
+<script>
+let repositories = [];
+let account = null;
+
+const $ = id => document.getElementById(id);
+
+async function connectGitHub() {
+  const username = $("username").value.trim();
+
+  if (!username) {
+    showMessage("Enter a GitHub username first.", true);
+    return;
+  }
+
+  $("connectButton").disabled = true;
+  $("connectButton").textContent = "Connecting...";
+  $("connectPanel").classList.add("loading");
+  showMessage("Fetching GitHub profile and repositories...");
+
+  try {
+    const headers = {
+      "Accept": "application/vnd.github+json"
+    };
+
+    const profileResponse = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}`,
+      { headers }
+    );
+
+    if (!profileResponse.ok) {
+      if (profileResponse.status === 404) {
+        throw new Error("GitHub user not found. Check the username.");
+      }
+      if (profileResponse.status === 403) {
+        throw new Error("GitHub API rate limit reached. Try again later.");
+      }
+      throw new Error("Unable to retrieve the GitHub profile.");
+    }
+
+    const profile = await profileResponse.json();
+
+    const repoResponse = await fetch(
+      `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated&type=owner`,
+      { headers }
+    );
+
+    if (!repoResponse.ok) {
+      if (repoResponse.status === 403) {
+        throw new Error("GitHub API rate limit reached. Try again later.");
+      }
+      throw new Error("Unable to retrieve repositories.");
+    }
+
+    const repos = await repoResponse.json();
+
+    account = profile;
+    repositories = repos;
+
+    renderProfile();
+    renderStats();
+    populateLanguages();
+    renderRepos();
+
+    $("connectionStatus").textContent = "● Connected: " + profile.login;
+    $("connectionStatus").style.color = "var(--green)";
+    $("profile").style.display = "flex";
+
+    showMessage("Successfully loaded " + repos.length + " public repositories.");
+
+  } catch (error) {
+    showMessage(error.message, true);
+  } finally {
+    $("connectButton").disabled = false;
+    $("connectButton").textContent = "Connect account ↗";
+    $("connectPanel").classList.remove("loading");
+  }
+}
+
+function showMessage(message, error = false) {
+  $("message").textContent = message;
+  $("message").className = error ? "message error" : "message";
+}
+
+function renderProfile() {
+  $("avatar").src = account.avatar_url;
+  $("profileName").textContent = account.name || account.login;
+  $("profileLogin").textContent = "@" + account.login;
+  $("profileBio").textContent = account.bio || "GitHub developer";
+  $("profileLink").href = account.html_url;
+}
+
+function renderStats() {
+  const stars = repositories.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+  const forks = repositories.reduce((sum, repo) => sum + repo.forks_count, 0);
+
+  const languages = new Set(
+    repositories.map(repo => repo.language).filter(Boolean)
+  );
+
+  $("repoStat").textContent = repositories.length;
+  $("starStat").textContent = stars.toLocaleString();
+  $("forkStat").textContent = forks.toLocaleString();
+  $("languageStat").textContent = languages.size;
+}
+
+function populateLanguages() {
+  const languages = [...new Set(
+    repositories.map(repo => repo.language).filter(Boolean)
+  )].sort();
+
+  $("languageFilter").innerHTML =
+    '<option value="">All languages</option>';
+
+  languages.forEach(language => {
+    const option = document.createElement("option");
+    option.value = language;
+    option.textContent = language;
+    $("languageFilter").appendChild(option);
+  });
+
+  const counts = {};
+  repositories.forEach(repo => {
+    if (repo.language) {
+      counts[repo.language] = (counts[repo.language] || 0) + 1;
+    }
+  });
+
+  const sorted = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1]);
+
+  $("languageList").replaceChildren();
+
+  if (!sorted.length) {
+    $("languageList").textContent = "No language information available.";
+    return;
+  }
+
+  sorted.forEach(([language, count]) => {
+    const row = document.createElement("div");
+    row.style.cssText =
+      "display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)";
+
+    const name = document.createElement("span");
+    name.textContent = language;
+
+    const value = document.createElement("strong");
+    value.style.color = "var(--green)";
+    value.textContent = count + " repositories";
+
+    row.append(name, value);
+    $("languageList").appendChild(row);
+  });
+}
+
+function renderRepos() {
+  const query = $("search").value.toLowerCase().trim();
+  const language = $("languageFilter").value;
+  const sort = $("sort").value;
+
+  let filtered = repositories.filter(repo => {
+    const matchesSearch =
+      repo.name.toLowerCase().includes(query) ||
+      (repo.description || "").toLowerCase().includes(query);
+
+    const matchesLanguage =
+      !language || repo.language === language;
+
+    return matchesSearch && matchesLanguage;
+  });
+
+  if (sort === "stars") {
+    filtered.sort((a,b) => b.stargazers_count - a.stargazers_count);
+  } else if (sort === "forks") {
+    filtered.sort((a,b) => b.forks_count - a.forks_count);
+  } else if (sort === "name") {
+    filtered.sort((a,b) => a.name.localeCompare(b.name));
+  } else {
+    filtered.sort((a,b) =>
+      new Date(b.updated_at) - new Date(a.updated_at)
+    );
+  }
+
+  $("repoCount").textContent =
+    filtered.length + " of " + repositories.length + " repositories";
+
+  const grid = $("repoGrid");
+  grid.replaceChildren();
+
+  if (!filtered.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No repositories match your filters.";
+    grid.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(repo => {
+    const card = document.createElement("article");
+    card.className = "repo";
+
+    const top = document.createElement("div");
+    top.className = "repo-top";
+
+    const link = document.createElement("a");
+    link.className = "repo-title";
+    link.href = repo.html_url;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = repo.name;
+
+    const visibility = document.createElement("span");
+    visibility.className = "visibility";
+    visibility.textContent = repo.private ? "PRIVATE" : "PUBLIC";
+
+    top.append(link, visibility);
+
+    const description = document.createElement("div");
+    description.className = "repo-description";
+    description.textContent =
+      repo.description || "No description provided.";
+
+    const footer = document.createElement("div");
+    footer.className = "repo-footer";
+
+    const language = document.createElement("span");
+    language.innerHTML = "";
+    if (repo.language) {
+      const dot = document.createElement("span");
+      dot.className = "language-dot";
+      language.append(dot, document.createTextNode(repo.language));
+    } else {
+      language.textContent = "No language";
+    }
+
+    const stars = document.createElement("span");
+    stars.textContent = "★ " + repo.stargazers_count;
+
+    const forks = document.createElement("span");
+    forks.textContent = "⑂ " + repo.forks_count;
+
+    const updated = document.createElement("span");
+    updated.textContent =
+      "Updated " + new Date(repo.updated_at).toLocaleDateString();
+
+    footer.append(language, stars, forks, updated);
+    card.append(top, description, footer);
+    grid.appendChild(card);
+  });
+}
+
+function disconnect() {
+  account = null;
+  repositories = [];
+
+  $("profile").style.display = "none";
+  $("connectionStatus").textContent = "● Not connected";
+  $("repoStat").textContent = "—";
+  $("starStat").textContent = "—";
+  $("forkStat").textContent = "—";
+  $("languageStat").textContent = "—";
+  $("repoCount").textContent = "Awaiting connection";
+  $("repoGrid").innerHTML =
+    '<div class="empty">Connect your GitHub profile to see your repositories here.</div>';
+
+  $("languageList").textContent =
+    "Connect GitHub to calculate your language distribution.";
+
+  $("languageFilter").innerHTML =
+    '<option value="">All languages</option>';
+
+  showMessage("Disconnected. Your public GitHub data is no longer displayed.");
+}
+
+function connectFocus() {
+  $("connectPanel").scrollIntoView({ behavior: "smooth" });
+  $("username").focus();
+}
+
+function showSection(section) {
+  const target = $(section);
+  if (target) target.scrollIntoView({ behavior: "smooth" });
+
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.classList.remove("active");
+  });
+
+  event.currentTarget.classList.add("active");
+}
+
+// Enter key connects the account.
+$("username").addEventListener("keydown", event => {
+  if (event.key === "Enter") connectGitHub();
+});
+
+// Load the default public profile.
+connectGitHub();
+</script>
+</body>
+</html>
