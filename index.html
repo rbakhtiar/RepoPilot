@@ -5,308 +5,1201 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071b16">
-<meta name="description" content="RepoPilot — Your GitHub command center.">
-<meta name="application-name" content="RepoPilot">
-<link rel="manifest" href="./manifest.json">
-<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<meta name="description" content="RepoPilot — Your GitHub developer command center.">
 <title>RepoPilot — Developer Command Center</title>
 
+<link rel="manifest" href="./manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-:root{
-  --bg:#06130f;
-  --surface:#0b1e18;
-  --surface2:#10271f;
-  --surface3:#16352a;
-  --border:rgba(150,210,177,.12);
-  --border2:rgba(150,210,177,.22);
-  --text:#e9f3ec;
-  --muted:#8ba497;
-  --dim:#587466;
-  --green:#5cce91;
-  --green2:#2fa86c;
-  --mint:#a0e9bd;
-  --gold:#d9bd7b;
-  --red:#e98282;
-  --blue:#83b8e8;
-  --radius:17px;
-  --shadow:0 18px 60px rgba(0,0,0,.25);
+:root {
+  --bg: #071b16;
+  --bg-deep: #04110e;
+  --panel: #0b241d;
+  --panel-2: #102c23;
+  --panel-3: #14372b;
+  --border: rgba(160,233,189,.11);
+  --border-strong: rgba(160,233,189,.2);
+  --green: #55d38e;
+  --mint: #a0e9bd;
+  --text: #edf8f0;
+  --muted: #91aa9b;
+  --dim: #62796c;
+  --danger: #e78b8b;
+  --warning: #e6c47b;
+  --shadow: 0 18px 55px rgba(0,0,0,.24);
+  --radius: 17px;
+  --sidebar-width: 252px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg-deep);
+}
+
+body {
+  min-height: 100vh;
   background:
-    radial-gradient(ellipse at 15% 0%,rgba(35,113,77,.15),transparent 35%),
-    radial-gradient(ellipse at 95% 35%,rgba(21,83,61,.11),transparent 35%),
+    radial-gradient(ellipse at 80% 0%, rgba(37,111,76,.12), transparent 35%),
     var(--bg);
-  color:var(--text);
-  font-family:"DM Sans",sans-serif;
-  min-height:100vh;
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  overflow-x: hidden;
 }
-button,input,select{font:inherit}
-button{cursor:pointer}
-a{color:inherit;text-decoration:none}
-::selection{background:rgba(92,206,145,.3)}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-thumb{background:#244a39;border-radius:20px}
-.app{min-height:100vh}
-.sidebar{
-  width:250px;position:fixed;inset:0 auto 0 0;
-  padding:26px 17px;background:rgba(7,24,18,.94);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;z-index:20;
-  backdrop-filter:blur(18px);
+
+button, input, select {
+  font: inherit;
 }
-.brand{display:flex;align-items:center;gap:12px;padding:0 10px 32px}
-.brand-mark{
-  width:39px;height:39px;border-radius:13px;
-  display:grid;place-items:center;
-  background:linear-gradient(145deg,#55d38e,#17643f);
-  color:#062015;font-size:20px;font-weight:800;
-  box-shadow:0 5px 22px rgba(60,190,120,.2);
+
+button {
+  cursor: pointer;
 }
-.brand-name{font-family:Alegreya,serif;font-size:25px;font-weight:700;letter-spacing:-.6px}
-.brand-name span{color:var(--green)}
-.brand-sub{font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
-.nav-label{padding:13px 12px 9px;color:var(--dim);font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase}
-.nav-item{
-  width:100%;border:0;background:transparent;color:var(--muted);
-  padding:12px 13px;border-radius:11px;text-align:left;
-  display:flex;align-items:center;gap:12px;font-size:13px;
-  margin:2px 0;transition:.2s;
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
 }
-.nav-item:hover,.nav-item.active{background:rgba(65,158,105,.13);color:var(--mint)}
-.nav-item.active{box-shadow:inset 3px 0 var(--green)}
-.nav-icon{width:20px;text-align:center;font-size:16px}
-.nav-count{margin-left:auto;font:11px "JetBrains Mono";color:var(--dim)}
-.sidebar-bottom{margin-top:auto}
-.sidebar-note{
-  padding:15px;background:linear-gradient(145deg,rgba(40,107,70,.2),rgba(17,48,35,.3));
-  border:1px solid var(--border);border-radius:14px;
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
-.sidebar-note strong{display:block;font-family:Alegreya;font-size:16px;margin-bottom:5px}
-.sidebar-note p{font-size:11px;line-height:1.6;color:var(--muted)}
-.sidebar-note small{display:block;color:var(--green);font-size:10px;margin-top:12px}
-.main{margin-left:250px;min-height:100vh}
-.topbar{
-  height:76px;padding:0 35px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  background:rgba(6,19,15,.66);backdrop-filter:blur(16px);
-  position:sticky;top:0;z-index:10;
+
+.app {
+  min-height: 100vh;
 }
-.breadcrumb{font-size:12px;color:var(--muted)}
-.breadcrumb strong{color:var(--text);font-weight:600}
-.top-actions{display:flex;align-items:center;gap:11px}
-.icon-btn,.btn{
-  border:1px solid var(--border);background:var(--surface);
-  color:var(--muted);border-radius:10px;padding:9px 12px;
-  transition:.2s;font-size:12px;
+
+/* SIDEBAR */
+
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-width);
+  background: rgba(5,22,17,.97);
+  border-right: 1px solid var(--border);
+  padding: 25px 17px;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  overflow-y: auto;
 }
-.icon-btn:hover,.btn:hover{border-color:var(--border2);color:var(--mint)}
-.btn.primary{background:var(--green);color:#062015;border-color:var(--green);font-weight:800}
-.btn.primary:hover{background:var(--mint)}
-.btn.danger{color:var(--red)}
-.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:7px;box-shadow:0 0 10px var(--green)}
-.content{max-width:1500px;margin:auto;padding:32px 35px 60px}
-.page{display:none;animation:fade .25s ease}
-.page.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.page-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:26px}
-.eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:800;margin-bottom:9px}
-h1{font-family:Alegreya,serif;font-size:37px;line-height:1.1;font-weight:700;letter-spacing:-.8px}
-.page-description{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.6}
-.panel{
-  background:linear-gradient(145deg,rgba(15,39,29,.94),rgba(9,27,20,.96));
-  border:1px solid var(--border);border-radius:var(--radius);
-  box-shadow:var(--shadow);
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 9px 31px;
 }
-.hero{
-  padding:27px;display:flex;align-items:center;justify-content:space-between;
-  gap:25px;margin-bottom:20px;position:relative;overflow:hidden;
+
+.brand-symbol {
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#1d6845,#0c3828);
+  border: 1px solid rgba(160,233,189,.3);
+  display: grid;
+  place-items: center;
+  color: var(--mint);
+  font-family: "Alegreya",serif;
+  font-weight: 800;
+  font-size: 26px;
+  box-shadow: 0 0 25px rgba(85,211,142,.12);
 }
-.hero:after{
-  content:"";position:absolute;width:280px;height:280px;border-radius:50%;
-  border:1px solid rgba(103,209,145,.08);right:5%;top:-180px;
-  box-shadow:0 0 0 35px rgba(103,209,145,.025),0 0 0 70px rgba(103,209,145,.02);
-  pointer-events:none;
+
+.brand-name {
+  font-family: "Alegreya",serif;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -.7px;
 }
-.profile{display:flex;align-items:center;gap:19px;min-width:0}
-.avatar{
-  width:76px;height:76px;border-radius:22px;object-fit:cover;
-  background:var(--surface3);border:2px solid rgba(92,206,145,.35);
+
+.brand-name span {
+  color: var(--green);
 }
-.profile-name{font-family:Alegreya;font-size:28px;font-weight:700}
-.profile-login{color:var(--green);font:12px "JetBrains Mono";margin-top:2px}
-.profile-bio{font-size:12px;color:var(--muted);margin-top:9px;max-width:500px;line-height:1.5}
-.profile-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
-.profile-actions{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.stat-card{padding:19px;min-height:119px;position:relative;overflow:hidden}
-.stat-card:after{content:"";position:absolute;width:80px;height:80px;border-radius:50%;background:rgba(75,185,120,.055);right:-25px;bottom:-35px}
-.stat-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px}
-.stat-icon{font-size:17px}
-.stat-value{font-family:Alegreya;font-size:32px;font-weight:700;margin-top:10px}
-.stat-caption{font-size:10px;color:var(--dim);margin-top:2px}
-.dashboard-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-bottom:18px}
-.panel-header{padding:19px 20px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.panel-title{font-family:Alegreya;font-size:19px;font-weight:700}
-.panel-subtitle{font-size:10px;color:var(--dim);margin-top:3px}
-.panel-body{padding:0 20px 20px}
-.chart-wrap{height:245px;position:relative}
-.language-list{display:grid;gap:12px;margin-top:13px}
-.language-row{display:grid;grid-template-columns:90px 1fr 35px;gap:10px;align-items:center;font-size:11px}
-.language-name{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{height:6px;background:#183127;border-radius:20px;overflow:hidden}
-.bar-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#258c58,#77dba0)}
-.language-percent{text-align:right;color:var(--dim);font:10px "JetBrains Mono"}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.search-wrap{flex:1;min-width:190px;position:relative}
-.search-wrap input{
-  width:100%;padding:12px 14px 12px 39px;
-  background:var(--surface);border:1px solid var(--border);
-  color:var(--text);border-radius:11px;outline:none;font-size:12px;
+
+.brand-caption {
+  color: var(--dim);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 1px;
 }
-.search-wrap input:focus,.select:focus{border-color:var(--green)}
-.search-symbol{position:absolute;left:14px;top:11px;color:var(--dim)}
-.select{
-  background:var(--surface);border:1px solid var(--border);color:var(--muted);
-  padding:11px 12px;border-radius:10px;outline:none;font-size:11px;
+
+.nav-label {
+  color: #61776a;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 0 12px;
+  margin: 17px 0 9px;
 }
-.repo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.repo-card{
-  padding:18px;border:1px solid var(--border);border-radius:15px;
-  background:linear-gradient(145deg,rgba(15,39,29,.8),rgba(9,25,19,.9));
-  transition:.2s;min-width:0;
+
+.nav-list {
+  display: grid;
+  gap: 5px;
 }
-.repo-card:hover{transform:translateY(-2px);border-color:rgba(92,206,145,.35)}
-.repo-top{display:flex;justify-content:space-between;gap:12px}
-.repo-title{font-size:14px;font-weight:700;color:var(--mint);overflow-wrap:anywhere}
-.repo-title:hover{text-decoration:underline}
-.repo-visibility{font-size:9px;color:var(--dim);border:1px solid var(--border);padding:3px 7px;border-radius:20px;height:max-content}
-.repo-desc{font-size:11px;line-height:1.6;color:var(--muted);margin:12px 0;min-height:35px}
-.topics{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:13px}
-.topic{font-size:9px;color:#a5d9ba;background:rgba(61,150,96,.13);padding:4px 7px;border-radius:5px}
-.repo-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--dim);font-size:10px}
-.repo-meta span{display:flex;align-items:center;gap:5px}
-.language-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.repo-actions{margin-left:auto;display:flex;gap:7px}
-.mini-btn{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:7px;padding:5px 8px;font-size:10px}
-.mini-btn:hover,.mini-btn.saved{color:var(--gold);border-color:rgba(217,189,123,.4)}
-.empty-state{padding:50px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
-.empty-state strong{display:block;font-family:Alegreya;font-size:23px;color:var(--text);margin-bottom:7px}
-.empty-state p{font-size:11px}
-.activity-list{display:grid;gap:0}
-.activity-item{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--border)}
-.activity-item:last-child{border:0}
-.activity-icon{width:32px;height:32px;flex-shrink:0;border-radius:10px;background:rgba(65,158,105,.13);display:grid;place-items:center;color:var(--green)}
-.activity-text{font-size:11px;line-height:1.6;color:var(--muted)}
-.activity-text strong{color:var(--text)}
-.activity-time{font:9px "JetBrains Mono";color:var(--dim);margin-top:4px}
-.section-space{margin-top:19px}
-.input-field{
-  width:100%;padding:12px 13px;background:var(--surface);
-  border:1px solid var(--border);border-radius:10px;color:var(--text);
-  outline:none;font-size:12px;
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 11px 12px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  transition: .2s ease;
 }
-.input-field:focus{border-color:var(--green)}
-.form-group{margin-bottom:17px}
-.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}
-.readme-content{padding:22px;line-height:1.75;font-size:12px;color:var(--muted);overflow-wrap:anywhere}
-.readme-content h1,.readme-content h2,.readme-content h3{font-family:Alegreya;color:var(--text);margin:17px 0 9px}
-.readme-content h1{font-size:25px}.readme-content h2{font-size:21px}.readme-content h3{font-size:17px}
-.readme-content p{margin:10px 0}
-.readme-content ul,.readme-content ol{padding-left:22px}
-.readme-content code{font-family:"JetBrains Mono";background:#183127;padding:2px 5px;border-radius:4px}
-.readme-content pre{overflow:auto;padding:14px;background:#06140f;border:1px solid var(--border);border-radius:9px;margin:12px 0}
-.readme-content pre code{background:none;padding:0}
-.readme-content a{color:var(--green);text-decoration:underline}
-.readme-content img{max-width:100%;height:auto}
-.readme-content blockquote{border-left:3px solid var(--green);padding-left:13px;margin:12px 0}
-.notice{padding:13px 15px;border-radius:10px;background:rgba(217,189,123,.08);border:1px solid rgba(217,189,123,.2);font-size:11px;color:#d9c99d;line-height:1.6}
-.footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;display:flex;justify-content:space-between;color:var(--dim);font-size:10px}
-.toast{
-  position:fixed;bottom:24px;right:24px;z-index:99;
-  padding:13px 17px;border:1px solid var(--border2);
-  background:#153729;color:var(--mint);border-radius:11px;
-  box-shadow:var(--shadow);font-size:12px;
-  opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;
+
+.nav-item:hover {
+  background: rgba(160,233,189,.055);
+  color: var(--text);
 }
-.toast.show{opacity:1;transform:none}
-.mobile-menu{display:none}
-.loading{color:var(--dim);font-size:11px;padding:20px;text-align:center}
-.skeleton{height:90px;border-radius:13px;background:linear-gradient(90deg,#10271f,#17382a,#10271f);background-size:200% 100%;animation:shimmer 1.5s infinite}
-@keyframes shimmer{to{background-position:-200% 0}}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:center;justify-content:center;padding:18px}
-.modal-backdrop.open{display:flex}
-.modal{width:min(720px,100%);max-height:85vh;overflow:auto;background:#0b2018;border:1px solid var(--border2);border-radius:17px;box-shadow:var(--shadow)}
-.modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.modal-body{padding:20px}
-@media(max-width:1100px){
-  .sidebar{width:215px}.main{margin-left:215px}
-  .content{padding:25px 23px}.stats-grid{grid-template-columns:repeat(2,1fr)}
+
+.nav-item.active {
+  color: var(--mint);
+  background: linear-gradient(90deg,rgba(85,211,142,.13),rgba(85,211,142,.035));
+  border-color: rgba(85,211,142,.13);
 }
-@media(max-width:760px){
-  .sidebar{transform:translateX(-100%);transition:.25s;width:260px}
-  .sidebar.open{transform:none;box-shadow:20px 0 60px rgba(0,0,0,.4)}
-  .main{margin-left:0}.topbar{height:65px;padding:0 17px}
-  .mobile-menu{display:inline-block}.content{padding:23px 15px 45px}
-  .page-heading{flex-direction:column}.page-heading h1{font-size:32px}
-  .hero{align-items:flex-start;flex-direction:column;padding:20px}
-  .profile{align-items:flex-start}.avatar{width:60px;height:60px;border-radius:17px}
-  .profile-name{font-size:23px}.dashboard-grid{grid-template-columns:1fr}
-  .repo-grid{grid-template-columns:1fr}.stats-grid{gap:9px}
-  .stat-card{padding:14px;min-height:105px}.stat-value{font-size:27px}
-  .top-actions .status-text{display:none}
-  .footer{gap:12px;flex-direction:column}
+
+.nav-icon {
+  width: 18px;
+  text-align: center;
+  font-family: "JetBrains Mono",monospace;
+  font-size: 13px;
+  color: inherit;
 }
-@media(max-width:390px){.stats-grid{grid-template-columns:1fr 1fr}.stat-value{font-size:24px}.profile-links{gap:5px}}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.connection-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px;
+}
+
+.connection-heading {
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mint);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(85,211,142,.55);
+}
+
+.version {
+  color: var(--dim);
+  font-family: "JetBrains Mono",monospace;
+  font-size: 10px;
+  margin: 14px 10px 0;
+}
+
+/* MAIN */
+
+.main {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  min-width: 0;
+}
+
+.topbar {
+  height: 74px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 36px;
+  background: rgba(7,27,22,.88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+
+.breadcrumb {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.breadcrumb strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-global {
+  width: 220px;
+  position: relative;
+}
+
+.search-global input {
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.search-global input::placeholder,
+.field input::placeholder {
+  color: var(--dim);
+}
+
+.icon-button {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  background: var(--panel);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.icon-button:hover {
+  color: var(--mint);
+  border-color: var(--border-strong);
+}
+
+.profile-mini {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-left: 9px;
+}
+
+.avatar {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--panel-3);
+  border: 1px solid var(--border-strong);
+}
+
+.profile-mini-name {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.profile-mini-sub {
+  color: var(--dim);
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+/* CONTENT */
+
+.content {
+  width: 100%;
+  max-width: 1600px;
+  padding: 34px 36px 55px;
+  margin: auto;
+}
+
+.page {
+  display: none;
+  animation: fadeIn .25s ease;
+  min-width: 0;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(5px)}
+  to {opacity:1; transform:translateY(0)}
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 27px;
+}
+
+.eyebrow {
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.page-title {
+  font-family: "Alegreya",serif;
+  font-size: clamp(29px,3vw,38px);
+  line-height: 1.08;
+  letter-spacing: -.5px;
+}
+
+.page-description {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 8px;
+}
+
+.primary-button,
+.secondary-button {
+  border-radius: 9px;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: .2s ease;
+}
+
+.primary-button {
+  background: var(--green);
+  color: #062016;
+  border: 1px solid var(--green);
+}
+
+.primary-button:hover {
+  background: var(--mint);
+  border-color: var(--mint);
+  transform: translateY(-1px);
+}
+
+.secondary-button {
+  background: var(--panel);
+  color: var(--mint);
+  border: 1px solid var(--border-strong);
+}
+
+.secondary-button:hover {
+  background: var(--panel-2);
+}
+
+.button-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+/* PANELS AND GRIDS */
+
+.grid {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.stats-grid {
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  margin-bottom: 18px;
+}
+
+.two-grid {
+  grid-template-columns: minmax(0,1.5fr) minmax(270px,1fr);
+  margin-bottom: 18px;
+}
+
+.three-grid {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+
+.panel,
+.stat-card {
+  background: linear-gradient(145deg,rgba(16,44,35,.94),rgba(9,31,24,.97));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-width: 0;
+}
+
+.panel {
+  padding: 21px;
+}
+
+.stat-card {
+  padding: 19px;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  right: -35px;
+  top: -45px;
+  background: rgba(85,211,142,.055);
+  pointer-events: none;
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.stat-symbol {
+  color: var(--green);
+  font-family: "JetBrains Mono",monospace;
+  font-size: 15px;
+}
+
+.stat-value {
+  font-family: "Alegreya",serif;
+  font-size: 35px;
+  font-weight: 700;
+  margin-top: 12px;
+  line-height: 1;
+}
+
+.stat-foot {
+  color: var(--dim);
+  font-size: 10px;
+  margin-top: 9px;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 19px;
+}
+
+.panel-title {
+  font-family: "Alegreya",serif;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.panel-subtitle {
+  color: var(--dim);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+/* PROFILE HERO */
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 19px;
+  padding: 23px;
+  margin-bottom: 19px;
+  background:
+    radial-gradient(ellipse at 90% 20%,rgba(85,211,142,.12),transparent 45%),
+    linear-gradient(120deg,#102f24,#0a2119);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  min-width: 0;
+}
+
+.profile-hero .avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+}
+
+.profile-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-name {
+  font-family: "Alegreya",serif;
+  font-size: 27px;
+  font-weight: 700;
+}
+
+.profile-username {
+  color: var(--green);
+  font-family: "JetBrains Mono",monospace;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.profile-bio {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 9px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.profile-link {
+  color: var(--mint);
+  font-size: 11px;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}
+
+.profile-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 12px;
+}
+
+.profile-meta span {
+  overflow-wrap: anywhere;
+}
+
+/* REPOSITORIES */
+
+.repo-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.field input,
+.field select,
+.toolbar-select {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  padding: 10px 12px;
+  min-width: 150px;
+  font-size: 11px;
+}
+
+.field input {
+  min-width: 220px;
+}
+
+.field select option,
+.toolbar-select option {
+  background: var(--panel);
+}
+
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 14px;
+}
+
+.repo-card {
+  padding: 19px;
+  background: linear-gradient(145deg,var(--panel),#091e17);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  min-width: 0;
+  transition: .2s ease;
+}
+
+.repo-card:hover {
+  border-color: rgba(85,211,142,.3);
+  transform: translateY(-2px);
+}
+
+.repo-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.repo-name {
+  color: var(--mint);
+  font-family: "JetBrains Mono",monospace;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.repo-name:hover {
+  text-decoration: underline;
+}
+
+.repo-visibility {
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.repo-description {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+  margin: 12px 0 17px;
+  min-height: 37px;
+  overflow-wrap: anywhere;
+}
+
+.repo-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  border-top: 1px solid var(--border);
+  padding-top: 13px;
+  color: var(--dim);
+  font-size: 10px;
+  flex-wrap: wrap;
+}
+
+.repo-language {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+}
+
+.language-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+}
+
+.repo-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.text-action {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.text-action:hover {
+  color: var(--mint);
+}
+
+.favorite-button {
+  border: 0;
+  background: transparent;
+  color: var(--dim);
+  font-size: 17px;
+  padding: 0 3px;
+}
+
+.favorite-button.active {
+  color: var(--green);
+}
+
+/* ACTIVITY */
+
+.activity-list {
+  display: grid;
+}
+
+.activity-item {
+  display: flex;
+  gap: 13px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-marker {
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  flex: 0 0 auto;
+  box-shadow: 0 0 10px rgba(85,211,142,.3);
+}
+
+.activity-body {
+  min-width: 0;
+}
+
+.activity-title {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.activity-title a {
+  color: var(--mint);
+}
+
+.activity-meta {
+  color: var(--dim);
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+/* ANALYTICS */
+
+.bar-list {
+  display: grid;
+  gap: 15px;
+}
+
+.bar-item {
+  display: grid;
+  gap: 7px;
+}
+
+.bar-info {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.bar-track {
+  height: 7px;
+  border-radius: 20px;
+  background: #18372b;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#287a50,var(--green));
+  border-radius: inherit;
+  min-width: 2px;
+}
+
+.chart-wrap {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* README */
+
+.readme-layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0,1fr);
+  gap: 16px;
+  min-width: 0;
+}
+
+.readme-list {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.readme-repo {
+  padding: 11px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  color: var(--muted);
+  background: transparent;
+  text-align: left;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.readme-repo:hover,
+.readme-repo.active {
+  background: var(--panel-2);
+  border-color: var(--border);
+  color: var(--mint);
+}
+
+.readme-content {
+  min-width: 0;
+  min-height: 400px;
+  max-height: 650px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #c7d9cd;
+  font-family: "JetBrains Mono",monospace;
+  font-size: 11px;
+  line-height: 1.85;
+  background: #061811;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+}
+
+/* SETTINGS */
+
+.settings-section {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-child {
+  border-bottom: 0;
+}
+
+.settings-title {
+  font-family: "Alegreya",serif;
+  font-size: 19px;
+  margin-bottom: 5px;
+}
+
+.settings-description {
+  color: var(--dim);
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.settings-row strong {
+  font-size: 12px;
+}
+
+.settings-row p {
+  color: var(--dim);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.settings-input {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  padding: 10px 12px;
+  width: min(100%,300px);
+  font-size: 12px;
+}
+
+/* STATES */
+
+.empty-state {
+  text-align: center;
+  padding: 55px 20px;
+  background: var(--panel);
+  border: 1px dashed var(--border-strong);
+  border-radius: 14px;
+  grid-column: 1/-1;
+}
+
+.empty-state h3 {
+  font-family: "Alegreya",serif;
+  font-size: 22px;
+  margin-bottom: 7px;
+}
+
+.empty-state p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.loading-state {
+  color: var(--muted);
+  text-align: center;
+  padding: 35px;
+  font-size: 12px;
+}
+
+.error-message {
+  color: var(--danger);
+  background: rgba(231,139,139,.07);
+  border: 1px solid rgba(231,139,139,.2);
+  padding: 13px;
+  border-radius: 9px;
+  font-size: 11px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.notice {
+  color: var(--muted);
+  background: rgba(85,211,142,.05);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 10px;
+  line-height: 1.6;
+  margin-top: 13px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* MOBILE */
+
+.mobile-menu {
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media(max-width:1100px) {
+  :root { --sidebar-width: 220px; }
+  .content { padding: 27px 24px 45px; }
+  .topbar { padding: 0 24px; }
+  .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .three-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+
+@media(max-width:760px) {
+  :root { --sidebar-width: 260px; }
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0,0,0,.6);
+  }
+
+  .main { margin-left: 0; }
+
+  .topbar {
+    height: 65px;
+    padding: 0 16px;
+  }
+
+  .mobile-menu {
+    display: grid;
+  }
+
+  .breadcrumb { display: none; }
+
+  .search-global {
+    width: min(40vw,180px);
+  }
+
+  .profile-mini-name,
+  .profile-mini-sub {
+    display: none;
+  }
+
+  .content {
+    padding: 25px 16px 40px;
+  }
+
+  .two-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .repo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .readme-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .readme-list {
+    max-height: 180px;
+  }
+
+  .page-heading {
+    flex-direction: column;
+  }
+
+  .profile-hero {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .profile-hero .avatar {
+    width: 62px;
+    height: 62px;
+  }
+}
+
+@media(max-width:440px) {
+  .stats-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 9px;
+  }
+
+  .stat-card { padding: 14px; }
+  .stat-value { font-size: 29px; }
+  .three-grid { grid-template-columns: 1fr; }
+  .search-global { width: 125px; }
+  .topbar-right { gap: 7px; }
+  .profile-mini { padding-left: 2px; }
+  .page-title { font-size: 31px; }
+  .field input { min-width: 0; width: 100%; }
+  .toolbar-left { width: 100%; }
+  .toolbar-left .field { width: 100%; }
+  .toolbar-left .field input { width: 100%; }
+  .profile-meta { gap: 8px; }
+}
 </style>
 </head>
 
 <body>
 <div class="app">
+
 <aside class="sidebar" id="sidebar">
   <div class="brand">
-    <div class="brand-mark">R</div>
-    <div><div class="brand-name">Repo<span>Pilot</span></div><div class="brand-sub">Developer command center</div></div>
+    <div class="brand-symbol">R</div>
+    <div>
+      <div class="brand-name">Repo<span>Pilot</span></div>
+      <div class="brand-caption">Developer command center</div>
+    </div>
   </div>
 
   <div class="nav-label">Workspace</div>
-  <button class="nav-item active" data-page="overview"><span class="nav-icon">◈</span> Overview</button>
-  <button class="nav-item" data-page="repositories"><span class="nav-icon">▤</span> Repositories <span class="nav-count" id="repoNavCount">—</span></button>
-  <button class="nav-item" data-page="favorites"><span class="nav-icon">☆</span> Favorites</button>
-  <button class="nav-item" data-page="activity"><span class="nav-icon">⌁</span> Activity</button>
+  <nav class="nav-list">
+    <button class="nav-item active" data-page="overview">
+      <span class="nav-icon">01</span> Overview
+    </button>
+    <button class="nav-item" data-page="repositories">
+      <span class="nav-icon">02</span> Repositories
+    </button>
+    <button class="nav-item" data-page="favorites">
+      <span class="nav-icon">03</span> Favorites
+    </button>
+    <button class="nav-item" data-page="activity">
+      <span class="nav-icon">04</span> Activity
+    </button>
+    <button class="nav-item" data-page="analytics">
+      <span class="nav-icon">05</span> Analytics
+    </button>
+  </nav>
 
-  <div class="nav-label">Insights</div>
-  <button class="nav-item" data-page="analytics"><span class="nav-icon">▥</span> Analytics</button>
-  <button class="nav-item" data-page="readme"><span class="nav-icon">▧</span> README Viewer</button>
-
-  <div class="nav-label">System</div>
-  <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span> Settings</button>
+  <div class="nav-label">Developer tools</div>
+  <nav class="nav-list">
+    <button class="nav-item" data-page="readme">
+      <span class="nav-icon">06</span> README Viewer
+    </button>
+    <button class="nav-item" data-page="settings">
+      <span class="nav-icon">07</span> Settings
+    </button>
+  </nav>
 
   <div class="sidebar-bottom">
-    <div class="sidebar-note">
-      <strong>Built for builders.</strong>
-      <p>Your public GitHub workspace, organized into one command center.</p>
-      <small>● RepoPilot V3.0</small>
+    <div class="connection-card">
+      <div class="connection-heading">GitHub API connection</div>
+      <div class="connection-status">
+        <span class="status-dot" id="connectionDot"></span>
+        <span id="connectionText">Waiting for connection</span>
+      </div>
     </div>
+    <div class="version">REPOPILOT / VERSION 3.0</div>
   </div>
 </aside>
 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <main class="main">
   <header class="topbar">
-    <div style="display:flex;align-items:center;gap:13px">
-      <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Open menu">☰</button>
-      <div class="breadcrumb">Workspace <span style="color:var(--dim)">/</span> <strong id="breadcrumb">Overview</strong></div>
+    <div class="topbar-right">
+      <button class="icon-button mobile-menu" id="menuButton" aria-label="Open navigation">≡</button>
+      <div class="breadcrumb">Workspace / <strong id="breadcrumbPage">Overview</strong></div>
     </div>
-    <div class="top-actions">
-      <span class="status-text" style="font-size:10px;color:var(--muted)"><span class="status-dot"></span><span id="connectionStatus">Ready</span></span>
-      <button class="icon-btn" id="refreshBtn" title="Refresh data">↻</button>
-      <button class="btn primary" id="exportBtn">↓ Export</button>
+
+    <div class="topbar-right">
+      <div class="search-global">
+        <input id="globalSearch" type="search" placeholder="Search repositories..." aria-label="Search repositories">
+      </div>
+      <button class="icon-button" id="refreshButton" title="Refresh GitHub data" aria-label="Refresh">↻</button>
+      <div class="profile-mini">
+        <img class="avatar" id="topAvatar" src="" alt="Profile">
+        <div>
+          <div class="profile-mini-name" id="topName">Developer</div>
+          <div class="profile-mini-sub">GitHub profile</div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -317,975 +1210,1008 @@ h1{font-family:Alegreya,serif;font-size:37px;line-height:1.1;font-weight:700;let
       <div class="page-heading">
         <div>
           <div class="eyebrow">Your development workspace</div>
-          <h1>Command center.</h1>
-          <p class="page-description">A clear view of your GitHub projects, activity and development progress.</p>
+          <h1 class="page-title">Command center.</h1>
+          <p class="page-description">A clear overview of your public GitHub development activity.</p>
         </div>
-        <button class="btn" id="openGithub">↗ Open GitHub</button>
+        <div class="button-row">
+          <button class="secondary-button" id="openGithubButton">Open GitHub</button>
+          <button class="primary-button" id="overviewRefresh">Refresh data</button>
+        </div>
       </div>
 
-      <div class="panel hero">
-        <div class="profile">
-          <img class="avatar" id="avatar" src="https://github.com/identicons/rbakhtiar.png" alt="GitHub avatar">
-          <div style="min-width:0">
-            <div class="profile-name" id="profileName">Connect your GitHub</div>
-            <div class="profile-login" id="profileLogin">@username</div>
-            <p class="profile-bio" id="profileBio">Enter your GitHub username in settings to load your developer profile.</p>
-            <div class="profile-links">
-              <span style="font-size:10px;color:var(--dim)" id="profileLocation"></span>
-              <span style="font-size:10px;color:var(--dim)" id="profileCompany"></span>
-            </div>
+      <div id="mainError"></div>
+
+      <div class="profile-hero">
+        <img class="avatar" id="profileAvatar" src="" alt="GitHub profile picture">
+        <div class="profile-info">
+          <div class="profile-name" id="profileName">Loading profile...</div>
+          <div class="profile-username" id="profileUsername">@rbakhtiar</div>
+          <div class="profile-bio" id="profileBio">Connecting to GitHub...</div>
+          <a class="profile-link" id="profileLink" href="https://github.com/" target="_blank" rel="noopener">View GitHub profile</a>
+          <div class="profile-meta">
+            <span id="profileLocation"></span>
+            <span id="profileCompany"></span>
+            <span id="profileJoined"></span>
           </div>
         </div>
-        <div class="profile-actions">
-          <button class="btn primary" id="viewProfile">View profile ↗</button>
-          <button class="btn" id="changeUser">Change user</button>
+      </div>
+
+      <div class="grid stats-grid">
+        <div class="stat-card">
+          <div class="stat-top"><span class="stat-label">Public repositories</span><span class="stat-symbol">R</span></div>
+          <div class="stat-value" id="statRepos">—</div>
+          <div class="stat-foot">Repositories owned by this account</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><span class="stat-label">Total stars</span><span class="stat-symbol">S</span></div>
+          <div class="stat-value" id="statStars">—</div>
+          <div class="stat-foot">Stars received across loaded repositories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><span class="stat-label">Followers</span><span class="stat-symbol">F</span></div>
+          <div class="stat-value" id="statFollowers">—</div>
+          <div class="stat-foot">GitHub followers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><span class="stat-label">Following</span><span class="stat-symbol">G</span></div>
+          <div class="stat-value" id="statFollowing">—</div>
+          <div class="stat-foot">Accounts followed</div>
         </div>
       </div>
 
-      <div class="stats-grid">
-        <div class="panel stat-card"><div class="stat-top">Repositories <span class="stat-icon">▤</span></div><div class="stat-value" id="statRepos">—</div><div class="stat-caption">Public repositories</div></div>
-        <div class="panel stat-card"><div class="stat-top">Total stars <span class="stat-icon">☆</span></div><div class="stat-value" id="statStars">—</div><div class="stat-caption">Across your repositories</div></div>
-        <div class="panel stat-card"><div class="stat-top">Total forks <span class="stat-icon">⑂</span></div><div class="stat-value" id="statForks">—</div><div class="stat-caption">Community forks</div></div>
-        <div class="panel stat-card"><div class="stat-top">Followers <span class="stat-icon">◎</span></div><div class="stat-value" id="statFollowers">—</div><div class="stat-caption">GitHub followers</div></div>
-      </div>
-
-      <div class="dashboard-grid">
+      <div class="grid two-grid">
         <div class="panel">
-          <div class="panel-header"><div><div class="panel-title">Language distribution</div><div class="panel-subtitle">Based on repository language metadata</div></div></div>
-          <div class="panel-body"><div class="chart-wrap"><canvas id="languageChart"></canvas></div></div>
-        </div>
-        <div class="panel">
-          <div class="panel-header"><div><div class="panel-title">Your developer profile</div><div class="panel-subtitle">GitHub account information</div></div></div>
-          <div class="panel-body">
-            <div class="language-list" id="profileDetails">
-              <div class="loading">Connect a GitHub account to see your profile.</div>
+          <div class="panel-heading">
+            <div>
+              <div class="panel-title">Recently updated</div>
+              <div class="panel-subtitle">Your latest repository changes</div>
             </div>
+            <button class="text-action" data-goto="repositories">View all</button>
+          </div>
+          <div id="recentRepos" class="activity-list">
+            <div class="loading-state">Loading repositories...</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <div class="panel-title">Language distribution</div>
+              <div class="panel-subtitle">Based on repository language metadata</div>
+            </div>
+          </div>
+          <div id="overviewLanguages" class="bar-list">
+            <div class="loading-state">Calculating languages...</div>
           </div>
         </div>
       </div>
 
       <div class="panel">
-        <div class="panel-header"><div><div class="panel-title">Recently updated</div><div class="panel-subtitle">Your latest repository changes</div></div><button class="btn" data-goto="repositories">All repositories →</button></div>
-        <div class="panel-body"><div class="repo-grid" id="recentRepos"><div class="loading">Waiting for GitHub data...</div></div></div>
+        <div class="panel-heading">
+          <div>
+            <div class="panel-title">Recent GitHub activity</div>
+            <div class="panel-subtitle">Latest public events from your account</div>
+          </div>
+          <button class="text-action" data-goto="activity">View activity</button>
+        </div>
+        <div id="overviewActivity" class="activity-list">
+          <div class="loading-state">Loading activity...</div>
+        </div>
       </div>
     </section>
 
     <!-- REPOSITORIES -->
     <section class="page" id="page-repositories">
-      <div class="page-heading"><div><div class="eyebrow">Project management</div><h1>Repositories.</h1><p class="page-description">Explore, search and organize your public GitHub projects.</p></div></div>
-      <div class="toolbar">
-        <div class="search-wrap"><span class="search-symbol">⌕</span><input id="repoSearch" type="search" placeholder="Search repositories, descriptions, topics..."></div>
-        <select class="select" id="languageFilter"><option value="">All languages</option></select>
-        <select class="select" id="sortFilter">
-          <option value="updated">Recently updated</option>
-          <option value="stars">Most stars</option>
-          <option value="forks">Most forks</option>
-          <option value="name">Name A–Z</option>
-          <option value="created">Recently created</option>
-        </select>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Project collection</div>
+          <h1 class="page-title">Repositories.</h1>
+          <p class="page-description">Browse, search, filter and inspect your public repositories.</p>
+        </div>
+        <button class="primary-button" id="exportRepos">Export JSON</button>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:13px;color:var(--dim);font-size:10px"><span id="repoResultCount">0 repositories</span><span>Public GitHub data</span></div>
-      <div class="repo-grid" id="allRepos"><div class="empty-state"><strong>No repositories loaded</strong><p>Connect your GitHub username in Settings.</p></div></div>
+
+      <div class="repo-toolbar">
+        <div class="toolbar-left">
+          <div class="field">
+            <input type="search" id="repoSearch" placeholder="Search repositories...">
+          </div>
+          <select class="toolbar-select" id="languageFilter" aria-label="Filter by language">
+            <option value="">All languages</option>
+          </select>
+          <select class="toolbar-select" id="typeFilter" aria-label="Filter by repository type">
+            <option value="all">All repositories</option>
+            <option value="source">Source repositories</option>
+            <option value="fork">Forks</option>
+          </select>
+        </div>
+        <div class="toolbar-right">
+          <select class="toolbar-select" id="sortRepos" aria-label="Sort repositories">
+            <option value="updated">Recently updated</option>
+            <option value="stars">Most stars</option>
+            <option value="name">Name A-Z</option>
+            <option value="created">Newest created</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="repoCount" class="page-description" style="margin:0 0 13px">Loading repositories...</div>
+      <div class="repo-grid" id="repoGrid">
+        <div class="loading-state">Loading repositories...</div>
+      </div>
     </section>
 
     <!-- FAVORITES -->
     <section class="page" id="page-favorites">
-      <div class="page-heading"><div><div class="eyebrow">Personal collection</div><h1>Favorites.</h1><p class="page-description">Your saved repositories, kept on this device.</p></div></div>
-      <div class="repo-grid" id="favoriteRepos"><div class="empty-state"><strong>No favorites yet</strong><p>Save repositories using the star button on a repository card.</p></div></div>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Personal collection</div>
+          <h1 class="page-title">Favorites.</h1>
+          <p class="page-description">Your saved repositories, kept in this browser.</p>
+        </div>
+      </div>
+      <div class="repo-grid" id="favoriteGrid">
+        <div class="empty-state">
+          <h3>No favorites yet</h3>
+          <p>Save repositories from the Repositories page to build your collection.</p>
+        </div>
+      </div>
     </section>
 
     <!-- ACTIVITY -->
     <section class="page" id="page-activity">
-      <div class="page-heading"><div><div class="eyebrow">Development timeline</div><h1>Activity.</h1><p class="page-description">Recent public events from your GitHub account.</p></div><button class="btn" id="reloadActivity">↻ Refresh activity</button></div>
-      <div class="panel">
-        <div class="panel-header"><div><div class="panel-title">GitHub timeline</div><div class="panel-subtitle">Public events returned by GitHub</div></div></div>
-        <div class="panel-body"><div class="activity-list" id="activityList"><div class="loading">Activity will appear after connecting GitHub.</div></div></div>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Development timeline</div>
+          <h1 class="page-title">Activity.</h1>
+          <p class="page-description">Public GitHub events associated with your account.</p>
+        </div>
+        <button class="secondary-button" id="refreshActivity">Refresh activity</button>
       </div>
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <div class="panel-title">Public event timeline</div>
+            <div class="panel-subtitle">GitHub API event history, subject to API limits</div>
+          </div>
+        </div>
+        <div class="activity-list" id="fullActivity">
+          <div class="loading-state">Loading events...</div>
+        </div>
+      </div>
+      <div class="notice">GitHub's public events endpoint provides a limited recent history. It is not a complete contribution calendar.</div>
     </section>
 
     <!-- ANALYTICS -->
     <section class="page" id="page-analytics">
-      <div class="page-heading"><div><div class="eyebrow">Project intelligence</div><h1>Analytics.</h1><p class="page-description">A breakdown of your public repository portfolio.</p></div></div>
-      <div class="stats-grid">
-        <div class="panel stat-card"><div class="stat-top">Average stars <span>☆</span></div><div class="stat-value" id="avgStars">—</div><div class="stat-caption">Per repository</div></div>
-        <div class="panel stat-card"><div class="stat-top">Languages <span>⌘</span></div><div class="stat-value" id="languageCount">—</div><div class="stat-caption">Distinct languages</div></div>
-        <div class="panel stat-card"><div class="stat-top">Forked projects <span>⑂</span></div><div class="stat-value" id="forkedCount">—</div><div class="stat-caption">Repositories with forks</div></div>
-        <div class="panel stat-card"><div class="stat-top">Archived <span>▣</span></div><div class="stat-value" id="archivedCount">—</div><div class="stat-caption">Archived repositories</div></div>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Project intelligence</div>
+          <h1 class="page-title">Analytics.</h1>
+          <p class="page-description">Insights calculated from the public repositories loaded by RepoPilot.</p>
+        </div>
       </div>
-      <div class="dashboard-grid">
-        <div class="panel"><div class="panel-header"><div><div class="panel-title">Stars by repository</div><div class="panel-subtitle">Top projects by star count</div></div></div><div class="panel-body"><div class="chart-wrap"><canvas id="starsChart"></canvas></div></div></div>
-        <div class="panel"><div class="panel-header"><div><div class="panel-title">Repository composition</div><div class="panel-subtitle">Forks versus original projects</div></div></div><div class="panel-body"><div class="chart-wrap"><canvas id="compositionChart"></canvas></div></div></div>
+
+      <div class="grid stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total forks</div>
+          <div class="stat-value" id="analyticsForks">—</div>
+          <div class="stat-foot">Across loaded repositories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Average stars</div>
+          <div class="stat-value" id="analyticsAverage">—</div>
+          <div class="stat-foot">Stars per loaded repository</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Original projects</div>
+          <div class="stat-value" id="analyticsOriginal">—</div>
+          <div class="stat-foot">Non-fork repositories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Forked projects</div>
+          <div class="stat-value" id="analyticsForked">—</div>
+          <div class="stat-foot">Repositories forked from others</div>
+        </div>
       </div>
-      <div class="panel"><div class="panel-header"><div><div class="panel-title">Language breakdown</div><div class="panel-subtitle">Repository count by language</div></div></div><div class="panel-body"><div id="analyticsLanguages" class="language-list"></div></div></div>
-      <p class="page-description section-space">Analytics are calculated from the public repository data returned by GitHub. They do not represent private repositories or total lifetime contributions.</p>
+
+      <div class="grid two-grid">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <div class="panel-title">Programming languages</div>
+              <div class="panel-subtitle">Repository count by primary language</div>
+            </div>
+          </div>
+          <div id="analyticsLanguages" class="bar-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <div class="panel-title">Repository composition</div>
+              <div class="panel-subtitle">Original projects compared with forks</div>
+            </div>
+          </div>
+          <div id="repoComposition" class="bar-list"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-heading">
+          <div>
+            <div class="panel-title">Most starred repositories</div>
+            <div class="panel-subtitle">Your top projects by GitHub stars</div>
+          </div>
+        </div>
+        <div id="topStarred" class="activity-list"></div>
+      </div>
+      <div class="notice">Analytics use the repositories returned by the GitHub API. They do not include private repositories or private contribution data.</div>
     </section>
 
     <!-- README -->
     <section class="page" id="page-readme">
-      <div class="page-heading"><div><div class="eyebrow">Documentation explorer</div><h1>README viewer.</h1><p class="page-description">Read project documentation without leaving RepoPilot.</p></div></div>
-      <div class="toolbar">
-        <select class="select" id="readmeRepo"><option value="">Choose a repository</option></select>
-        <button class="btn primary" id="loadReadme">Load README</button>
-        <button class="btn" id="openReadmeGithub">Open on GitHub ↗</button>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Project documentation</div>
+          <h1 class="page-title">README Viewer.</h1>
+          <p class="page-description">Inspect README files from your public repositories.</p>
+        </div>
       </div>
-      <div class="panel">
-        <div class="panel-header"><div><div class="panel-title" id="readmeTitle">Documentation</div><div class="panel-subtitle" id="readmeSubtitle">Select a repository to begin</div></div></div>
-        <div class="readme-content" id="readmeContent"><div class="empty-state"><strong>Choose a project</strong><p>Your README will be displayed here.</p></div></div>
+
+      <div class="readme-layout">
+        <div class="panel">
+          <div class="panel-heading">
+            <div class="panel-title">Repositories</div>
+          </div>
+          <div class="readme-list" id="readmeList">
+            <div class="loading-state">Loading repositories...</div>
+          </div>
+        </div>
+        <div class="panel" style="padding:13px;min-width:0">
+          <div class="panel-heading" style="padding:7px 8px 0">
+            <div>
+              <div class="panel-title" id="readmeTitle">Select a repository</div>
+              <div class="panel-subtitle">README source</div>
+            </div>
+          </div>
+          <pre class="readme-content" id="readmeContent">Choose a repository from the list to inspect its README file.</pre>
+        </div>
       </div>
+      <div class="notice">README content is displayed as plain text for safety. Markdown is not executed as HTML.</div>
     </section>
 
     <!-- SETTINGS -->
     <section class="page" id="page-settings">
-      <div class="page-heading"><div><div class="eyebrow">Application configuration</div><h1>Settings.</h1><p class="page-description">Configure your GitHub connection and local preferences.</p></div></div>
-      <div class="panel" style="max-width:720px">
-        <div class="panel-header"><div><div class="panel-title">GitHub connection</div><div class="panel-subtitle">Public profile access — no token required</div></div></div>
-        <div class="panel-body">
-          <div class="form-group"><label for="usernameInput">GitHub username</label><input class="input-field" id="usernameInput" placeholder="Enter your GitHub username" autocomplete="off"></div>
-          <button class="btn primary" id="saveUsername">Connect account →</button>
-          <div class="section-space notice">RepoPilot uses the public GitHub REST API. Your username is stored locally in this browser. No password or personal access token is requested. Unauthenticated API requests are subject to GitHub's rate limits.</div>
+      <div class="page-heading">
+        <div>
+          <div class="eyebrow">Application preferences</div>
+          <h1 class="page-title">Settings.</h1>
+          <p class="page-description">Configure your RepoPilot workspace.</p>
         </div>
       </div>
-      <div class="panel section-space" style="max-width:720px">
-        <div class="panel-header"><div><div class="panel-title">Local data</div><div class="panel-subtitle">Manage information stored in this browser</div></div></div>
-        <div class="panel-body">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 0;border-bottom:1px solid var(--border)"><div><strong style="font-size:12px">Favorites</strong><p style="font-size:10px;color:var(--dim);margin-top:4px">Saved repository IDs</p></div><button class="btn danger" id="clearFavorites">Clear favorites</button></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 0"><div><strong style="font-size:12px">Cached profile settings</strong><p style="font-size:10px;color:var(--dim);margin-top:4px">Username and local preferences</p></div><button class="btn danger" id="resetSettings">Reset settings</button></div>
+
+      <div class="panel">
+        <div class="settings-section">
+          <div class="settings-title">GitHub account</div>
+          <div class="settings-description">Choose which public GitHub profile RepoPilot should display.</div>
+          <div class="settings-row">
+            <div>
+              <strong>GitHub username</strong>
+              <p>Public profile and repository data</p>
+            </div>
+            <div class="button-row">
+              <input class="settings-input" id="usernameInput" value="rbakhtiar" placeholder="GitHub username">
+              <button class="primary-button" id="saveUsername">Connect account</button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="panel section-space" style="max-width:720px">
-        <div class="panel-header"><div><div class="panel-title">About RepoPilot</div><div class="panel-subtitle">Application information</div></div></div>
-        <div class="panel-body" style="font-size:11px;color:var(--muted);line-height:1.9">
-          <p><strong style="color:var(--text)">RepoPilot V3.0</strong> — GitHub developer command center.</p>
-          <p>Frontend: HTML, CSS and JavaScript.</p>
-          <p>Data: GitHub REST API.</p>
-          <p>Charts: Chart.js.</p>
-          <p>Storage: Browser localStorage.</p>
-          <p>Deployment: GitHub Pages compatible.</p>
+
+        <div class="settings-section">
+          <div class="settings-title">Data and privacy</div>
+          <div class="settings-description">RepoPilot uses the public GitHub API. Your favorites are stored locally in this browser.</div>
+          <div class="settings-row">
+            <div>
+              <strong>Clear local favorites</strong>
+              <p>This does not delete anything from GitHub.</p>
+            </div>
+            <button class="secondary-button" id="clearFavorites">Clear favorites</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">Export</div>
+          <div class="settings-description">Save a copy of the public repository information currently loaded.</div>
+          <div class="settings-row">
+            <div>
+              <strong>Repository data</strong>
+              <p>Export as a JSON file.</p>
+            </div>
+            <button class="secondary-button" id="settingsExport">Export repositories</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">About RepoPilot</div>
+          <div class="settings-description">A GitHub developer command center.</div>
+          <div class="settings-row">
+            <div>
+              <strong>Version 3.0</strong>
+              <p>Dark emerald interface · GitHub REST API · Browser-based application</p>
+            </div>
+            <span class="connection-status"><span class="status-dot"></span> Ready</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <footer class="footer"><span>RepoPilot © 2026 · Built for builders.</span><span>GitHub API · Public data · V3.0</span></footer>
   </div>
 </main>
-</div>
-
-<div class="toast" id="toast"></div>
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="modal-head"><strong id="modalTitle">Repository</strong><button class="icon-btn" id="closeModal">✕</button></div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
 </div>
 
 <script>
 "use strict";
 
-/* ==========================================================
-   REP​​OPILOT V3 — APPLICATION CORE
-========================================================== */
+/* CONFIGURATION */
 
 const CONFIG = {
-  api: "https://api.github.com",
   defaultUsername: "rbakhtiar",
-  perPage: 100,
-  cacheDuration: 5 * 60 * 1000
+  apiBase: "https://api.github.com",
+  repositoryLimit: 100
 };
 
-const Store = {
-  get(key, fallback = null) {
-    try {
-      const value = localStorage.getItem("repopilot_" + key);
-      return value === null ? fallback : JSON.parse(value);
-    } catch {
-      return fallback;
-    }
-  },
-  set(key, value) {
-    try {
-      localStorage.setItem("repopilot_" + key, JSON.stringify(value));
-    } catch (error) {
-      console.warn("Storage unavailable:", error);
-    }
-  },
-  remove(key) {
-    localStorage.removeItem("repopilot_" + key);
-  }
-};
-
-const State = {
-  username: Store.get("username", CONFIG.defaultUsername),
-  user: null,
+const state = {
+  username: localStorage.getItem("repopilot_username") || CONFIG.defaultUsername,
+  profile: null,
   repos: [],
   events: [],
-  favorites: Store.get("favorites", []),
-  languageChart: null,
-  starsChart: null,
-  compositionChart: null,
-  currentReadmeRepo: null,
-  lastFetched: 0
+  favorites: JSON.parse(localStorage.getItem("repopilot_favorites") || "[]"),
+  loading: false,
+  currentPage: "overview"
 };
 
-const $ = selector => document.querySelector(selector);
-const $$ = selector => [...document.querySelectorAll(selector)];
+const $ = id => document.getElementById(id);
 
-const formatNumber = number =>
-  new Intl.NumberFormat().format(number || 0);
-
-const timeAgo = date => {
-  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
-  if (!Number.isFinite(seconds)) return "Unknown date";
-  if (seconds < 60) return "Just now";
-  const intervals = [
-    ["year", 31536000], ["month", 2592000],
-    ["week", 604800], ["day", 86400],
-    ["hour", 3600], ["minute", 60]
-  ];
-  for (const [name, length] of intervals) {
-    const amount = Math.floor(seconds / length);
-    if (amount >= 1) return amount + " " + name + (amount > 1 ? "s" : "") + " ago";
-  }
-  return "Just now";
-};
-
-function toast(message) {
-  const element = $("#toast");
-  element.textContent = message;
-  element.classList.add("show");
-  clearTimeout(toast.timer);
-  toast.timer = setTimeout(() => element.classList.remove("show"), 2600);
+function safeText(value, fallback = "") {
+  return value === null || value === undefined || value === ""
+    ? fallback
+    : String(value);
 }
 
-function setConnectionStatus(message, connected = false) {
-  $("#connectionStatus").textContent = message;
-  $(".status-dot").style.background = connected ? "var(--green)" : "var(--gold)";
-  $(".status-dot").style.boxShadow = connected ? "0 0 10px var(--green)" : "none";
+function formatNumber(number) {
+  return new Intl.NumberFormat().format(Number(number) || 0);
+}
+
+function formatDate(date) {
+  if (!date) return "Unknown date";
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "Unknown date";
+  return parsed.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function timeAgo(date) {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (!Number.isFinite(seconds) || seconds < 0) return "Recently";
+
+  const units = [
+    ["year", 31536000],
+    ["month", 2592000],
+    ["day", 86400],
+    ["hour", 3600],
+    ["minute", 60]
+  ];
+
+  for (const [name, size] of units) {
+    const count = Math.floor(seconds / size);
+    if (count >= 1) return count + " " + name + (count === 1 ? "" : "s") + " ago";
+  }
+
+  return "Just now";
 }
 
 function escapeHTML(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;",
-    '"': "&quot;", "'": "&#39;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
   })[char]);
 }
 
-function safeURL(value) {
-  try {
-    const url = new URL(value);
-    return ["https:", "http:"].includes(url.protocol) ? url.href : "#";
-  } catch {
-    return "#";
-  }
+function setConnection(connected, message) {
+  $("connectionText").textContent = message;
+  $("connectionDot").style.background = connected ? "var(--green)" : "var(--danger)";
 }
 
-/* ==========================================================
-   GITHUB API
-========================================================== */
-
-async function githubRequest(path, options = {}) {
-  const response = await fetch(CONFIG.api + path, {
-    ...options,
+async function api(path) {
+  const response = await fetch(CONFIG.apiBase + path, {
     headers: {
-      "Accept": "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      ...(options.headers || {})
+      "Accept": "application/vnd.github+json"
     }
   });
 
-  if (response.status === 404) throw new Error("GitHub resource not found.");
-  if (response.status === 403) {
-    const remaining = response.headers.get("X-RateLimit-Remaining");
-    if (remaining === "0") throw new Error("GitHub API rate limit reached. Try again later.");
-    throw new Error("GitHub denied this request. Please try again later.");
+  if (!response.ok) {
+    let message = "GitHub API request failed (" + response.status + ").";
+    try {
+      const data = await response.json();
+      if (data.message) message = data.message;
+    } catch (_) {}
+    throw new Error(message);
   }
-  if (!response.ok) throw new Error("GitHub API error: " + response.status);
+
   return response.json();
 }
 
-async function loadGithubData(force = false) {
-  if (!State.username) {
-    setConnectionStatus("Not connected");
-    return;
-  }
-
-  if (!force && State.user && Date.now() - State.lastFetched < CONFIG.cacheDuration) {
-    renderAll();
-    return;
-  }
-
-  setConnectionStatus("Connecting...");
-  $("#profileName").textContent = "Loading profile...";
-  $("#recentRepos").innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
-
-  try {
-    const username = encodeURIComponent(State.username.trim());
-    const [user, repos] = await Promise.all([
-      githubRequest("/users/" + username),
-      githubRequest("/users/" + username + "/repos?per_page=" + CONFIG.perPage + "&sort=updated&type=owner")
-    ]);
-
-    State.user = user;
-    State.repos = repos;
-    State.lastFetched = Date.now();
-
-    Store.set("username", State.username);
-    setConnectionStatus("Connected", true);
-
-    renderAll();
-    loadActivity().catch(error => console.warn("Activity unavailable:", error));
-    toast("GitHub data loaded.");
-  } catch (error) {
-    setConnectionStatus("Connection error");
-    $("#profileName").textContent = "Unable to connect";
-    $("#profileBio").textContent = error.message;
-    $("#recentRepos").innerHTML = '<div class="empty-state"><strong>Could not load GitHub data</strong><p>' + escapeHTML(error.message) + '</p></div>';
-    toast(error.message);
-  }
-}
-
-/* ==========================================================
-   PROFILE AND DASHBOARD
-========================================================== */
-
-function renderProfile() {
-  const user = State.user;
-  if (!user) return;
-
-  $("#avatar").src = user.avatar_url;
-  $("#profileName").textContent = user.name || user.login;
-  $("#profileLogin").textContent = "@" + user.login;
-  $("#profileBio").textContent = user.bio || "No public bio has been added to this profile.";
-  $("#profileLocation").textContent = user.location ? "⌖ " + user.location : "";
-  $("#profileCompany").textContent = user.company ? "▣ " + user.company : "";
-
-  $("#viewProfile").onclick = () => window.open(safeURL(user.html_url), "_blank", "noopener");
-  $("#openGithub").onclick = () => window.open(safeURL(user.html_url), "_blank", "noopener");
-
-  const details = [
-    ["Account created", new Date(user.created_at).toLocaleDateString()],
-    ["Public repositories", formatNumber(user.public_repos)],
-    ["Followers", formatNumber(user.followers)],
-    ["Following", formatNumber(user.following)],
-    ["Public gists", formatNumber(user.public_gists)]
-  ];
-
-  $("#profileDetails").innerHTML = details.map(([label, value]) =>
-    '<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding:9px 0;font-size:11px"><span style="color:var(--muted)">' +
-    escapeHTML(label) + '</span><strong style="font-family:JetBrains Mono;color:var(--text)">' +
-    escapeHTML(value) + '</strong></div>'
-  ).join("");
-}
-
-function calculateStats() {
-  const repos = State.repos;
-  return {
-    repos: repos.length,
-    stars: repos.reduce((sum, repo) => sum + repo.stargazers_count, 0),
-    forks: repos.reduce((sum, repo) => sum + repo.forks_count, 0),
-    languages: [...new Set(repos.map(repo => repo.language).filter(Boolean))],
-    forked: repos.filter(repo => repo.fork).length,
-    archived: repos.filter(repo => repo.archived).length
-  };
-}
-
-function renderStats() {
-  const stats = calculateStats();
-  $("#statRepos").textContent = formatNumber(State.user?.public_repos ?? stats.repos);
-  $("#statStars").textContent = formatNumber(stats.stars);
-  $("#statForks").textContent = formatNumber(stats.forks);
-  $("#statFollowers").textContent = formatNumber(State.user?.followers);
-  $("#repoNavCount").textContent = stats.repos;
-
-  $("#avgStars").textContent = stats.repos ? (stats.stars / stats.repos).toFixed(1) : "0";
-  $("#languageCount").textContent = stats.languages.length;
-  $("#forkedCount").textContent = stats.forked;
-  $("#archivedCount").textContent = stats.archived;
-}
-
-function languageCounts() {
-  const counts = {};
-  State.repos.forEach(repo => {
-    if (repo.language) counts[repo.language] = (counts[repo.language] || 0) + 1;
-  });
-  return Object.entries(counts).sort((a, b) => b[1] - a[1]);
-}
-
-const languageColors = [
-  "#65cf91", "#82b9e8", "#d9bd7b", "#b69be5",
-  "#e58b8b", "#66c5c4", "#d99b6c", "#9fcf79",
-  "#b2a8d9", "#8da8b5"
-];
-
-function chartDefaults() {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: { color: "#9bb2a5", boxWidth: 9, padding: 14, font: { size: 10 } }
-      }
-    }
-  };
-}
-
-function renderLanguageChart() {
-  const data = languageCounts();
-  if (State.languageChart) State.languageChart.destroy();
-
-  if (!$("#languageChart")) return;
-  State.languageChart = new Chart($("#languageChart"), {
-    type: "doughnut",
-    data: {
-      labels: data.map(item => item[0]),
-      datasets: [{
-        data: data.map(item => item[1]),
-        backgroundColor: data.map((_, index) => languageColors[index % languageColors.length]),
-        borderColor: "#0b1e18",
-        borderWidth: 3,
-        hoverOffset: 5
-      }]
-    },
-    options: {
-      ...chartDefaults(),
-      cutout: "72%",
-      plugins: { ...chartDefaults().plugins, legend: { position: "right", labels: { color: "#9bb2a5", boxWidth: 9, padding: 13, font: { size: 10 } } } }
-    }
-  });
-
-  renderLanguageList("#analyticsLanguages", data);
-}
-
-function renderLanguageList(selector, data) {
-  const target = $(selector);
-  if (!target) return;
-  const total = data.reduce((sum, item) => sum + item[1], 0);
-
-  if (!total) {
-    target.innerHTML = '<div class="loading">No language metadata available.</div>';
-    return;
-  }
-
-  target.innerHTML = data.map(([name, count], index) => {
-    const percentage = (count / total * 100).toFixed(1);
-    return '<div class="language-row"><span class="language-name">' + escapeHTML(name) +
-      '</span><div class="bar-track"><div class="bar-fill" style="width:' + percentage +
-      '%;background:' + languageColors[index % languageColors.length] + '"></div></div><span class="language-percent">' +
-      percentage + '%</span></div>';
-  }).join("");
-}
-
-function renderAnalyticsCharts() {
-  if (State.starsChart) State.starsChart.destroy();
-  if (State.compositionChart) State.compositionChart.destroy();
-
-  const top = [...State.repos].sort((a, b) => b.stargazers_count - a.stargazers_count).slice(0, 8);
-
-  State.starsChart = new Chart($("#starsChart"), {
-    type: "bar",
-    data: {
-      labels: top.map(repo => repo.name.length > 15 ? repo.name.slice(0, 15) + "…" : repo.name),
-      datasets: [{
-        label: "Stars",
-        data: top.map(repo => repo.stargazers_count),
-        backgroundColor: "#4bbd7d",
-        borderRadius: 5
-      }]
-    },
-    options: {
-      ...chartDefaults(),
-      indexAxis: "y",
-      scales: {
-        x: { ticks: { color: "#819b8c" }, grid: { color: "rgba(150,210,177,.08)" } },
-        y: { ticks: { color: "#a5b9ab" }, grid: { display: false } }
-      }
-    }
-  });
-
-  const originals = State.repos.filter(repo => !repo.fork).length;
-  const forks = State.repos.length - originals;
-
-  State.compositionChart = new Chart($("#compositionChart"), {
-    type: "doughnut",
-    data: {
-      labels: ["Original repositories", "Forked repositories"],
-      datasets: [{
-        data: [originals, forks],
-        backgroundColor: ["#55c987", "#8a9eaf"],
-        borderColor: "#0b1e18",
-        borderWidth: 3
-      }]
-    },
-    options: { ...chartDefaults(), cutout: "68%" }
-  });
-}
-
-/* ==========================================================
-   REPOSITORY MANAGEMENT
-========================================================== */
-
-function repoCard(repo) {
-  const saved = State.favorites.includes(repo.id);
-  const language = repo.language || "Not specified";
-  const topics = (repo.topics || []).slice(0, 4);
-
-  return `
-  <article class="repo-card">
-    <div class="repo-top">
-      <a class="repo-title" href="${safeURL(repo.html_url)}" target="_blank" rel="noopener">${escapeHTML(repo.name)}</a>
-      <span class="repo-visibility">${repo.private ? "Private" : "Public"}</span>
-    </div>
-    <p class="repo-desc">${escapeHTML(repo.description || "No project description provided.")}</p>
-    <div class="topics">${topics.map(topic => `<span class="topic">${escapeHTML(topic)}</span>`).join("")}</div>
-    <div class="repo-meta">
-      <span><i class="language-dot"></i>${escapeHTML(language)}</span>
-      <span>☆ ${formatNumber(repo.stargazers_count)}</span>
-      <span>⑂ ${formatNumber(repo.forks_count)}</span>
-      <span>↻ ${escapeHTML(timeAgo(repo.updated_at))}</span>
-      <div class="repo-actions">
-        <button class="mini-btn ${saved ? "saved" : ""}" data-favorite="${repo.id}" title="Toggle favorite">${saved ? "★" : "☆"}</button>
-        <button class="mini-btn" data-details="${repo.id}" title="Details">•••</button>
-      </div>
-    </div>
-  </article>`;
-}
-
-function bindRepoButtons(container) {
-  container.querySelectorAll("[data-favorite]").forEach(button => {
-    button.addEventListener("click", () => toggleFavorite(Number(button.dataset.favorite)));
-  });
-  container.querySelectorAll("[data-details]").forEach(button => {
-    button.addEventListener("click", () => showRepoDetails(Number(button.dataset.details)));
-  });
-}
-
-function renderRepoCollection(selector, repos) {
-  const container = $(selector);
-  if (!container) return;
-
-  if (!repos.length) {
-    container.innerHTML = '<div class="empty-state"><strong>Nothing here yet</strong><p>Try a different search or save a repository as a favorite.</p></div>';
-    return;
-  }
-
-  container.innerHTML = repos.map(repoCard).join("");
-  bindRepoButtons(container);
-}
-
-function renderRepositoryFilters() {
-  const languages = [...new Set(State.repos.map(repo => repo.language).filter(Boolean))].sort();
-  const filter = $("#languageFilter");
-  const current = filter.value;
-
-  filter.innerHTML = '<option value="">All languages</option>' +
-    languages.map(language => `<option value="${escapeHTML(language)}">${escapeHTML(language)}</option>`).join("");
-
-  if (languages.includes(current)) filter.value = current;
-}
-
-function getFilteredRepos() {
-  const query = $("#repoSearch").value.trim().toLowerCase();
-  const language = $("#languageFilter").value;
-  const sort = $("#sortFilter").value;
-
-  let repos = State.repos.filter(repo => {
-    const searchable = [
-      repo.name, repo.description, repo.language,
-      ...(repo.topics || [])
-    ].filter(Boolean).join(" ").toLowerCase();
-
-    return (!query || searchable.includes(query)) &&
-      (!language || repo.language === language);
-  });
-
-  const sorts = {
-    updated: (a, b) => new Date(b.updated_at) - new Date(a.updated_at),
-    stars: (a, b) => b.stargazers_count - a.stargazers_count,
-    forks: (a, b) => b.forks_count - a.forks_count,
-    name: (a, b) => a.name.localeCompare(b.name),
-    created: (a, b) => new Date(b.created_at) - new Date(a.created_at)
-  };
-
-  return repos.sort(sorts[sort] || sorts.updated);
-}
-
-function renderRepositoryPage() {
-  const repos = getFilteredRepos();
-  $("#repoResultCount").textContent = repos.length + " repositories";
-  renderRepoCollection("#allRepos", repos);
-}
-
-function toggleFavorite(id) {
-  if (State.favorites.includes(id)) {
-    State.favorites = State.favorites.filter(item => item !== id);
-    toast("Removed from favorites.");
-  } else {
-    State.favorites.push(id);
-    toast("Repository saved.");
-  }
-
-  Store.set("favorites", State.favorites);
-  renderRepositoryPage();
-  renderFavorites();
-  renderRepoCollection("#recentRepos", State.repos.slice(0, 4));
-}
-
-function renderFavorites() {
-  const favoriteRepos = State.repos.filter(repo => State.favorites.includes(repo.id));
-  renderRepoCollection("#favoriteRepos", favoriteRepos);
-}
-
-function showRepoDetails(id) {
-  const repo = State.repos.find(item => item.id === id);
-  if (!repo) return;
-
-  $("#modalTitle").textContent = repo.name;
-  $("#modalBody").innerHTML = `
-    <p style="color:var(--muted);font-size:12px;line-height:1.7">${escapeHTML(repo.description || "No description.")}</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0">
-      ${[
-        ["Language", repo.language || "Unknown"],
-        ["Stars", formatNumber(repo.stargazers_count)],
-        ["Forks", formatNumber(repo.forks_count)],
-        ["Watchers", formatNumber(repo.watchers_count)],
-        ["Created", new Date(repo.created_at).toLocaleDateString()],
-        ["Updated", new Date(repo.updated_at).toLocaleDateString()],
-        ["License", repo.license?.spdx_id || "Not specified"],
-        ["Default branch", repo.default_branch]
-      ].map(([label, value]) => `<div style="padding:12px;background:var(--surface2);border-radius:9px"><div style="font-size:9px;color:var(--dim);margin-bottom:5px">${escapeHTML(label)}</div><strong style="font-size:12px">${escapeHTML(value)}</strong></div>`).join("")}
-    </div>
-    <div class="topics">${(repo.topics || []).map(topic => `<span class="topic">${escapeHTML(topic)}</span>`).join("")}</div>
-    <div style="display:flex;gap:9px;margin-top:17px;flex-wrap:wrap">
-      <a class="btn primary" href="${safeURL(repo.html_url)}" target="_blank" rel="noopener">Open repository ↗</a>
-      <button class="btn" id="modalReadme">Read README</button>
-    </div>
-  `;
-
-  $("#modalReadme").onclick = () => {
-    $("#modalBackdrop").classList.remove("open");
-    $("#readmeRepo").value = String(repo.id);
-    navigate("readme");
-    loadReadme();
-  };
-
-  $("#modalBackdrop").classList.add("open");
-}
-
-/* ==========================================================
-   RECENT ACTIVITY
-========================================================== */
-
-async function loadActivity() {
-  if (!State.username) return;
-
-  try {
-    State.events = await githubRequest(
-      "/users/" + encodeURIComponent(State.username) +
-      "/events/public?per_page=30"
-    );
-    renderActivity();
-  } catch (error) {
-    $("#activityList").innerHTML = '<div class="loading">' + escapeHTML(error.message) + '</div>';
-  }
-}
-
-function activityDescription(event) {
-  const repo = event.repo?.name || "a repository";
-  const actor = event.actor?.login || State.username;
-  const messages = {
-    PushEvent: ["↑", `${actor} pushed changes to ${repo}`],
-    CreateEvent: ["＋", `${actor} created something in ${repo}`],
-    DeleteEvent: ["−", `${actor} deleted a branch or tag in ${repo}`],
-    WatchEvent: ["☆", `${actor} starred ${repo}`],
-    ForkEvent: ["⑂", `${actor} forked ${repo}`],
-    IssuesEvent: ["◇", `${actor} interacted with an issue in ${repo}`],
-    PullRequestEvent: ["⇄", `${actor} worked on a pull request in ${repo}`],
-    ReleaseEvent: ["◆", `${actor} published a release in ${repo}`],
-    IssueCommentEvent: ["✎", `${actor} commented on an issue in ${repo}`]
-  };
-
-  return messages[event.type] || ["·", `${actor} performed ${event.type || "an event"} in ${repo}`];
-}
-
-function renderActivity() {
-  const container = $("#activityList");
-
-  if (!State.events.length) {
-    container.innerHTML = '<div class="empty-state"><strong>No recent public activity</strong><p>GitHub returned no public events for this account.</p></div>';
-    return;
-  }
-
-  container.innerHTML = State.events.map(event => {
-    const [icon, description] = activityDescription(event);
-    return `<div class="activity-item">
-      <div class="activity-icon">${icon}</div>
-      <div><div class="activity-text">${escapeHTML(description)}</div>
-      <div class="activity-time">${escapeHTML(timeAgo(event.created_at))}</div></div>
-    </div>`;
-  }).join("");
-}
-
-/* ==========================================================
-   README VIEWER
-========================================================== */
-
-function renderReadmeOptions() {
-  const select = $("#readmeRepo");
-  const current = select.value;
-
-  select.innerHTML = '<option value="">Choose a repository</option>' +
-    State.repos.map(repo => `<option value="${repo.id}">${escapeHTML(repo.name)}</option>`).join("");
-
-  if (State.repos.some(repo => String(repo.id) === current)) select.value = current;
-}
-
-async function loadReadme() {
-  const id = Number($("#readmeRepo").value);
-  const repo = State.repos.find(item => item.id === id);
-
-  if (!repo) {
-    toast("Choose a repository first.");
-    return;
-  }
-
-  State.currentReadmeRepo = repo;
-  $("#readmeTitle").textContent = repo.name;
-  $("#readmeSubtitle").textContent = "Loading documentation...";
-  $("#readmeContent").innerHTML = '<div class="loading">Loading README from GitHub...</div>';
-
-  try {
-    const data = await githubRequest(
-      "/repos/" + encodeURIComponent(State.username) +
-      "/" + encodeURIComponent(repo.name) + "/readme"
-    );
-
-    const response = await fetch(data.download_url);
-    if (!response.ok) throw new Error("Could not download README.");
-    const markdown = await response.text();
-
-    $("#readmeSubtitle").textContent = "README · " + repo.default_branch;
-    $("#readmeContent").textContent = markdown;
-    $("#readmeContent").style.whiteSpace = "pre-wrap";
-    $("#readmeContent").style.fontFamily = "JetBrains Mono, monospace";
-    $("#readmeContent").style.fontSize = "11px";
-    $("#readmeContent").style.lineHeight = "1.8";
-  } catch (error) {
-    $("#readmeSubtitle").textContent = "Documentation unavailable";
-    $("#readmeContent").innerHTML = '<div class="notice">' + escapeHTML(error.message) + '</div>';
-  }
-}
-
-/* ==========================================================
-   NAVIGATION
-========================================================== */
-
-const pageNames = {
-  overview: "Overview",
-  repositories: "Repositories",
-  favorites: "Favorites",
-  activity: "Activity",
-  analytics: "Analytics",
-  readme: "README Viewer",
-  settings: "Settings"
-};
+/* NAVIGATION */
 
 function navigate(page) {
-  if (!pageNames[page]) return;
+  const target = $("page-" + page);
+  if (!target) return;
 
-  $$(".page").forEach(item => item.classList.remove("active"));
-  $("#page-" + page).classList.add("active");
+  state.currentPage = page;
 
-  $$(".nav-item").forEach(item =>
-    item.classList.toggle("active", item.dataset.page === page)
-  );
+  document.querySelectorAll(".page").forEach(item => {
+    item.classList.toggle("active", item.id === "page-" + page);
+  });
 
-  $("#breadcrumb").textContent = pageNames[page];
-  $("#sidebar").classList.remove("open");
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.classList.toggle("active", item.dataset.page === page);
+  });
 
-  if (page === "analytics" && State.repos.length) {
-    setTimeout(renderAnalyticsCharts, 40);
-  }
+  const label = document.querySelector('.nav-item[data-page="' + page + '"]');
+  $("breadcrumbPage").textContent = label
+    ? label.textContent.trim().replace(/^\d+\s*/, "")
+    : page;
+
+  $("sidebar").classList.remove("open");
+  $("sidebarOverlay").classList.remove("show");
+
+  if (page === "favorites") renderFavorites();
+  if (page === "analytics") renderAnalytics();
+  if (page === "readme") renderReadmeList();
 }
 
-$$(".nav-item").forEach(button => {
+document.querySelectorAll(".nav-item").forEach(button => {
   button.addEventListener("click", () => navigate(button.dataset.page));
 });
 
-$$("[data-goto]").forEach(button => {
+document.querySelectorAll("[data-goto]").forEach(button => {
   button.addEventListener("click", () => navigate(button.dataset.goto));
 });
 
-/* ==========================================================
-   RENDER ALL
-========================================================== */
+$("menuButton").addEventListener("click", () => {
+  $("sidebar").classList.add("open");
+  $("sidebarOverlay").classList.add("show");
+});
 
-function renderAll() {
-  renderProfile();
-  renderStats();
-  renderLanguageChart();
-  renderRepoCollection("#recentRepos", State.repos.slice(0, 4));
-  renderRepositoryFilters();
-  renderRepositoryPage();
-  renderFavorites();
-  renderReadmeOptions();
+$("sidebarOverlay").addEventListener("click", () => {
+  $("sidebar").classList.remove("open");
+  $("sidebarOverlay").classList.remove("show");
+});
 
-  if ($("#page-analytics").classList.contains("active")) {
-    setTimeout(renderAnalyticsCharts, 50);
+/* PROFILE AND DATA */
+
+async function loadGithubData() {
+  if (state.loading) return;
+  state.loading = true;
+
+  setConnection(false, "Connecting...");
+  $("mainError").innerHTML = "";
+
+  try {
+    const username = encodeURIComponent(state.username);
+
+    const [profile, repos] = await Promise.all([
+      api("/users/" + username),
+      api("/users/" + username + "/repos?per_page=" + CONFIG.repositoryLimit + "&sort=updated&type=owner")
+    ]);
+
+    state.profile = profile;
+    state.repos = Array.isArray(repos) ? repos : [];
+
+    renderProfile();
+    renderStats();
+    renderRecentRepos();
+    renderLanguages();
+    renderRepositories();
+    renderFavorites();
+    renderAnalytics();
+    renderReadmeList();
+
+    setConnection(true, "Connected to GitHub");
+    $("usernameInput").value = state.username;
+
+    await loadActivity();
+
+  } catch (error) {
+    setConnection(false, "Connection failed");
+    $("mainError").innerHTML =
+      '<div class="error-message">' + escapeHTML(error.message) +
+      ' Check the username, internet connection or GitHub API rate limit.</div>';
+
+    $("recentRepos").innerHTML = emptyHTML("Unable to load repositories", error.message);
+    $("repoGrid").innerHTML = emptyHTML("Unable to load repositories", error.message);
+  } finally {
+    state.loading = false;
   }
 }
 
-/* ==========================================================
-   EXPORT
-========================================================== */
+function renderProfile() {
+  const p = state.profile;
+  if (!p) return;
 
-function exportData() {
+  $("profileAvatar").src = p.avatar_url || "";
+  $("topAvatar").src = p.avatar_url || "";
+  $("profileName").textContent = p.name || p.login;
+  $("profileUsername").textContent = "@" + p.login;
+  $("topName").textContent = p.login;
+  $("profileBio").textContent = p.bio || "No public biography has been added.";
+  $("profileLink").href = p.html_url;
+  $("profileLocation").textContent = p.location ? "Location: " + p.location : "";
+  $("profileCompany").textContent = p.company ? "Company: " + p.company : "";
+  $("profileJoined").textContent = "Joined " + formatDate(p.created_at);
+  $("openGithubButton").onclick = () => window.open(p.html_url, "_blank", "noopener");
+}
+
+function renderStats() {
+  const p = state.profile;
+  if (!p) return;
+
+  const stars = state.repos.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
+
+  $("statRepos").textContent = formatNumber(p.public_repos);
+  $("statStars").textContent = formatNumber(stars);
+  $("statFollowers").textContent = formatNumber(p.followers);
+  $("statFollowing").textContent = formatNumber(p.following);
+}
+
+function emptyHTML(title, description) {
+  return '<div class="empty-state"><h3>' + escapeHTML(title) +
+    '</h3><p>' + escapeHTML(description) + '</p></div>';
+}
+
+/* REPOSITORIES */
+
+function repoCard(repo) {
+  const favorite = state.favorites.includes(repo.id);
+
+  return `
+    <article class="repo-card">
+      <div class="repo-card-top">
+        <a class="repo-name" href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener">${escapeHTML(repo.name)}</a>
+        <span class="repo-visibility">${repo.private ? "Private" : "Public"}</span>
+      </div>
+      <p class="repo-description">${escapeHTML(repo.description || "No description provided.")}</p>
+      <div class="repo-footer">
+        <span class="repo-language">
+          <span class="language-dot"></span>
+          ${escapeHTML(repo.language || "Not specified")}
+        </span>
+        <div class="repo-actions">
+          <span>${formatNumber(repo.stargazers_count)} stars</span>
+          <span>${formatNumber(repo.forks_count)} forks</span>
+          <button class="favorite-button ${favorite ? "active" : ""}" data-favorite="${repo.id}" title="${favorite ? "Remove favorite" : "Add favorite"}" aria-label="${favorite ? "Remove favorite" : "Add favorite"}">${favorite ? "★" : "☆"}</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function bindFavoriteButtons(container) {
+  container.querySelectorAll("[data-favorite]").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = Number(button.dataset.favorite);
+      toggleFavorite(id);
+    });
+  });
+}
+
+function toggleFavorite(id) {
+  if (state.favorites.includes(id)) {
+    state.favorites = state.favorites.filter(item => item !== id);
+  } else {
+    state.favorites.push(id);
+  }
+
+  localStorage.setItem("repopilot_favorites", JSON.stringify(state.favorites));
+
+  renderRepositories();
+  renderFavorites();
+}
+
+function renderRepositories() {
+  const grid = $("repoGrid");
+  if (!state.repos.length) {
+    grid.innerHTML = emptyHTML("No repositories found", "This account has no loaded public repositories.");
+    return;
+  }
+
+  const query = $("repoSearch").value.toLowerCase().trim();
+  const language = $("languageFilter").value;
+  const type = $("typeFilter").value;
+  const sort = $("sortRepos").value;
+
+  let repos = state.repos.filter(repo => {
+    const matchesQuery =
+      repo.name.toLowerCase().includes(query) ||
+      (repo.description || "").toLowerCase().includes(query);
+
+    const matchesLanguage = !language || repo.language === language;
+    const matchesType =
+      type === "all" ||
+      (type === "fork" && repo.fork) ||
+      (type === "source" && !repo.fork);
+
+    return matchesQuery && matchesLanguage && matchesType;
+  });
+
+  if (sort === "stars") {
+    repos.sort((a,b) => b.stargazers_count - a.stargazers_count);
+  } else if (sort === "name") {
+    repos.sort((a,b) => a.name.localeCompare(b.name));
+  } else if (sort === "created") {
+    repos.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  } else {
+    repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+  }
+
+  $("repoCount").textContent = repos.length + " repositories displayed";
+
+  grid.innerHTML = repos.length
+    ? repos.map(repoCard).join("")
+    : emptyHTML("No matching repositories", "Try changing your search or filters.");
+
+  bindFavoriteButtons(grid);
+}
+
+function renderFavorites() {
+  const grid = $("favoriteGrid");
+  const repos = state.repos.filter(repo => state.favorites.includes(repo.id));
+
+  grid.innerHTML = repos.length
+    ? repos.map(repoCard).join("")
+    : emptyHTML("No favorites yet", "Save repositories from the Repositories page to build your collection.");
+
+  bindFavoriteButtons(grid);
+}
+
+function renderRecentRepos() {
+  const recent = [...state.repos]
+    .sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))
+    .slice(0,5);
+
+  $("recentRepos").innerHTML = recent.length
+    ? recent.map(repo => `
+      <div class="activity-item">
+        <span class="activity-marker"></span>
+        <div class="activity-body">
+          <div class="activity-title"><a href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener">${escapeHTML(repo.name)}</a></div>
+          <div class="activity-meta">Updated ${timeAgo(repo.updated_at)} · ${formatNumber(repo.stargazers_count)} stars</div>
+        </div>
+      </div>
+    `).join("")
+    : emptyHTML("No repositories", "No public repositories were returned.");
+}
+
+/* LANGUAGE DATA */
+
+function getLanguageCounts() {
+  const counts = {};
+
+  state.repos.forEach(repo => {
+    if (repo.language) {
+      counts[repo.language] = (counts[repo.language] || 0) + 1;
+    }
+  });
+
+  return Object.entries(counts).sort((a,b) => b[1] - a[1]);
+}
+
+function renderBarList(container, entries) {
+  if (!entries.length) {
+    container.innerHTML = '<div class="loading-state">No language data available.</div>';
+    return;
+  }
+
+  const max = Math.max(...entries.map(item => item[1]), 1);
+
+  container.innerHTML = entries.map(([name,count]) => `
+    <div class="bar-item">
+      <div class="bar-info">
+        <span>${escapeHTML(name)}</span>
+        <span>${count} repositories</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${Math.max(2,count/max*100)}%"></div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderLanguages() {
+  const languages = getLanguageCounts();
+
+  renderBarList($("overviewLanguages"), languages.slice(0,6));
+
+  const filter = $("languageFilter");
+  const previous = filter.value;
+
+  filter.innerHTML = '<option value="">All languages</option>' +
+    languages.map(([name]) =>
+      '<option value="' + escapeHTML(name) + '">' + escapeHTML(name) + '</option>'
+    ).join("");
+
+  if (languages.some(([name]) => name === previous)) {
+    filter.value = previous;
+  }
+}
+
+/* ACTIVITY */
+
+function describeEvent(event) {
+  const repo = event.repo?.name || "a repository";
+  const payload = event.payload || {};
+
+  switch (event.type) {
+    case "PushEvent":
+      return "Pushed " + (payload.commits?.length || 0) + " commit(s) to " + repo;
+    case "CreateEvent":
+      return "Created " + (payload.ref_type || "a resource") + " in " + repo;
+    case "DeleteEvent":
+      return "Deleted " + (payload.ref_type || "a resource") + " in " + repo;
+    case "WatchEvent":
+      return "Starred " + repo;
+    case "ForkEvent":
+      return "Forked " + repo;
+    case "IssuesEvent":
+      return "Updated an issue in " + repo;
+    case "PullRequestEvent":
+      return "Updated a pull request in " + repo;
+    case "IssueCommentEvent":
+      return "Commented on an issue in " + repo;
+    case "PublicEvent":
+      return "Made " + repo + " public";
+    case "ReleaseEvent":
+      return "Published a release in " + repo;
+    default:
+      return event.type.replace("Event","") + " in " + repo;
+  }
+}
+
+async function loadActivity() {
+  try {
+    const events = await api("/users/" + encodeURIComponent(state.username) + "/events/public?per_page=30");
+    state.events = Array.isArray(events) ? events : [];
+    renderActivity();
+  } catch (error) {
+    $("overviewActivity").innerHTML = emptyHTML("Activity unavailable", error.message);
+    $("fullActivity").innerHTML = emptyHTML("Activity unavailable", error.message);
+  }
+}
+
+function eventMarkup(event) {
+  const repoName = event.repo?.name || "";
+  const repoUrl = repoName ? "https://github.com/" + repoName : "#";
+
+  return `
+    <div class="activity-item">
+      <span class="activity-marker"></span>
+      <div class="activity-body">
+        <div class="activity-title">
+          ${escapeHTML(describeEvent(event))}
+          ${repoName ? ' · <a href="' + escapeHTML(repoUrl) + '" target="_blank" rel="noopener">Open repository</a>' : ""}
+        </div>
+        <div class="activity-meta">${escapeHTML(event.type)} · ${timeAgo(event.created_at)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderActivity() {
+  const markup = state.events.length
+    ? state.events.map(eventMarkup).join("")
+    : emptyHTML("No public activity found", "GitHub did not return any recent public events.");
+
+  $("overviewActivity").innerHTML = state.events.length
+    ? state.events.slice(0,5).map(eventMarkup).join("")
+    : markup;
+
+  $("fullActivity").innerHTML = markup;
+}
+
+/* ANALYTICS */
+
+function renderAnalytics() {
+  if (!state.repos.length) return;
+
+  const total = state.repos.length;
+  const forks = state.repos.filter(repo => repo.fork).length;
+  const original = total - forks;
+  const stars = state.repos.reduce((sum,repo) => sum + repo.stargazers_count,0);
+  const forkCount = state.repos.reduce((sum,repo) => sum + repo.forks_count,0);
+
+  $("analyticsForks").textContent = formatNumber(forkCount);
+  $("analyticsAverage").textContent = (stars / total).toFixed(1);
+  $("analyticsOriginal").textContent = formatNumber(original);
+  $("analyticsForked").textContent = formatNumber(forks);
+
+  renderBarList($("analyticsLanguages"), getLanguageCounts());
+
+  renderBarList($("repoComposition"), [
+    ["Original repositories",original],
+    ["Forked repositories",forks]
+  ]);
+
+  const top = [...state.repos]
+    .sort((a,b) => b.stargazers_count - a.stargazers_count)
+    .slice(0,7);
+
+  $("topStarred").innerHTML = top.map(repo => `
+    <div class="activity-item">
+      <span class="activity-marker"></span>
+      <div class="activity-body">
+        <div class="activity-title"><a href="${escapeHTML(repo.html_url)}" target="_blank" rel="noopener">${escapeHTML(repo.name)}</a></div>
+        <div class="activity-meta">${formatNumber(repo.stargazers_count)} stars · ${formatNumber(repo.forks_count)} forks</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* README VIEWER */
+
+function renderReadmeList() {
+  const list = $("readmeList");
+
+  if (!state.repos.length) {
+    list.innerHTML = '<div class="loading-state">No repositories available.</div>';
+    return;
+  }
+
+  list.innerHTML = [...state.repos]
+    .sort((a,b) => a.name.localeCompare(b.name))
+    .map(repo => `
+      <button class="readme-repo" data-readme="${repo.id}">${escapeHTML(repo.name)}</button>
+    `).join("");
+
+  list.querySelectorAll("[data-readme]").forEach(button => {
+    button.addEventListener("click", () => {
+      list.querySelectorAll(".readme-repo").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+
+      const repo = state.repos.find(item => item.id === Number(button.dataset.readme));
+      if (repo) loadReadme(repo);
+    });
+  });
+}
+
+async function loadReadme(repo) {
+  $("readmeTitle").textContent = repo.name;
+  $("readmeContent").textContent = "Loading README...";
+
+  try {
+    const response = await fetch(
+      "https://api.github.com/repos/" +
+      encodeURIComponent(repo.owner.login) + "/" +
+      encodeURIComponent(repo.name) + "/readme",
+      { headers: { "Accept": "application/vnd.github.raw+json" } }
+    );
+
+    if (response.status === 404) {
+      $("readmeContent").textContent = "This repository does not contain a README file.";
+      return;
+    }
+
+    if (!response.ok) throw new Error("Unable to fetch README (" + response.status + ").");
+
+    const content = await response.text();
+    $("readmeContent").textContent = content;
+  } catch (error) {
+    $("readmeContent").textContent = error.message;
+  }
+}
+
+/* SEARCH AND FILTERS */
+
+$("repoSearch").addEventListener("input", renderRepositories);
+$("languageFilter").addEventListener("change", renderRepositories);
+$("typeFilter").addEventListener("change", renderRepositories);
+$("sortRepos").addEventListener("change", renderRepositories);
+
+$("globalSearch").addEventListener("input", event => {
+  $("repoSearch").value = event.target.value;
+  navigate("repositories");
+  renderRepositories();
+});
+
+/* EXPORT */
+
+function exportRepositories() {
+  if (!state.repos.length) {
+    alert("There are no repository records to export yet.");
+    return;
+  }
+
   const data = {
-    application: "RepoPilot",
-    version: "3.0",
     exportedAt: new Date().toISOString(),
-    username: State.username,
-    profile: State.user,
-    repositories: State.repos,
-    favorites: State.favorites
+    username: state.username,
+    repositoryCount: state.repos.length,
+    repositories: state.repos
   };
 
-  const blob = new Blob([JSON.stringify(data, null, 2)], {
+  const blob = new Blob([JSON.stringify(data,null,2)], {
     type: "application/json"
   });
 
   const url = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = "repopilot-" + State.username + ".json";
-  anchor.click();
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "repopilot-" + state.username + "-repositories.json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
   URL.revokeObjectURL(url);
-  toast("Export created.");
 }
 
-/* ==========================================================
-   SETTINGS AND EVENTS
-========================================================== */
+$("exportRepos").addEventListener("click", exportRepositories);
+$("settingsExport").addEventListener("click", exportRepositories);
 
-async function connectUsername() {
-  const username = $("#usernameInput").value.trim().replace(/^@/, "");
+/* SETTINGS */
+
+$("saveUsername").addEventListener("click", async () => {
+  const username = $("usernameInput").value.trim();
 
   if (!/^[a-zA-Z0-9-]{1,39}$/.test(username)) {
-    toast("Enter a valid GitHub username.");
+    alert("Enter a valid GitHub username.");
     return;
   }
 
-  State.username = username;
-  State.user = null;
-  State.repos = [];
-  State.events = [];
-  State.lastFetched = 0;
-  Store.set("username", username);
+  state.username = username;
+  localStorage.setItem("repopilot_username", username);
 
-  await loadGithubData(true);
+  state.profile = null;
+  state.repos = [];
+  state.events = [];
+
+  await loadGithubData();
   navigate("overview");
-}
-
-$("#saveUsername").addEventListener("click", connectUsername);
-$("#changeUser").addEventListener("click", () => {
-  navigate("settings");
-  $("#usernameInput").focus();
 });
 
-$("#refreshBtn").addEventListener("click", () => loadGithubData(true));
-$("#exportBtn").addEventListener("click", exportData);
-$("#repoSearch").addEventListener("input", renderRepositoryPage);
-$("#languageFilter").addEventListener("change", renderRepositoryPage);
-$("#sortFilter").addEventListener("change", renderRepositoryPage);
-$("#loadReadme").addEventListener("click", loadReadme);
-$("#reloadActivity").addEventListener("click", loadActivity);
+$("clearFavorites").addEventListener("click", () => {
+  if (!confirm("Clear all saved favorites from this browser?")) return;
 
-$("#openReadmeGithub").addEventListener("click", () => {
-  const repo = State.currentReadmeRepo;
-  if (repo) window.open(safeURL(repo.html_url), "_blank", "noopener");
-  else toast("Load a README first.");
-});
+  state.favorites = [];
+  localStorage.removeItem("repopilot_favorites");
 
-$("#clearFavorites").addEventListener("click", () => {
-  State.favorites = [];
-  Store.set("favorites", []);
   renderFavorites();
-  renderRepositoryPage();
-  toast("Favorites cleared.");
+  renderRepositories();
 });
 
-$("#resetSettings").addEventListener("click", () => {
-  if (!confirm("Reset RepoPilot's saved username and local settings?")) return;
-  Store.remove("username");
-  Store.remove("favorites");
-  State.favorites = [];
-  State.username = "";
-  State.user = null;
-  State.repos = [];
-  State.events = [];
-  $("#usernameInput").value = "";
-  $("#profileName").textContent = "Connect your GitHub";
-  $("#profileLogin").textContent = "@username";
-  $("#profileBio").textContent = "Enter your GitHub username in settings to load your developer profile.";
-  $("#statRepos").textContent = "—";
-  $("#statStars").textContent = "—";
-  $("#statForks").textContent = "—";
-  $("#statFollowers").textContent = "—";
-  setConnectionStatus("Not connected");
-  renderFavorites();
-  toast("Settings reset.");
-});
+$("refreshButton").addEventListener("click", loadGithubData);
+$("overviewRefresh").addEventListener("click", loadGithubData);
+$("refreshActivity").addEventListener("click", loadActivity);
 
-$("#menuBtn").addEventListener("click", () => {
-  $("#sidebar").classList.toggle("open");
-});
+/* INITIALIZATION */
 
-$("#closeModal").addEventListener("click", () => {
-  $("#modalBackdrop").classList.remove("open");
-});
-
-$("#modalBackdrop").addEventListener("click", event => {
-  if (event.target === $("#modalBackdrop")) {
-    $("#modalBackdrop").classList.remove("open");
-  }
-});
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-    $("#modalBackdrop").classList.remove("open");
-    $("#sidebar").classList.remove("open");
-  }
-
-  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
-    event.preventDefault();
-    navigate("repositories");
-    $("#repoSearch").focus();
-  }
-});
-
-/* ==========================================================
-   INITIALIZATION
-========================================================== */
-
-function initialize() {
-  $("#usernameInput").value = State.username || "";
-  setConnectionStatus("Initializing");
-  loadGithubData();
+async function initialize() {
+  $("usernameInput").value = state.username;
+  await loadGithubData();
 }
 
 initialize();
 
-/* ==========================================================
-   SERVICE WORKER
-========================================================== */
+/* PWA */
 
-if ("serviceWorker" in navigator && location.protocol === "https:") {
+if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .then(registration => {
-        console.log("RepoPilot service worker registered:", registration.scope);
-      })
-      .catch(error => {
-        console.warn("Service worker registration failed:", error);
-      });
+    navigator.serviceWorker.register("./sw.js").catch(error => {
+      console.warn("Service worker registration failed:", error);
+    });
   });
 }
 </script>
