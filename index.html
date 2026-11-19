@@ -4,428 +4,911 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#071b15">
-<title>RepoPilot — GitHub Workspace</title>
+<meta name="theme-color" content="#07150f">
+<title>RepoPilot — Developer Intelligence</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 :root {
-  --bg: #07130f;
-  --panel: #0d2019;
-  --panel2: #10281f;
-  --border: #1c3b2e;
-  --green: #40c68b;
-  --muted: #91a99b;
-  --white: #edf7f0;
-  --gold: #d7b77b;
-  --danger: #e47d7d;
+ --bg:#07150f;
+ --surface:#0b1d14;
+ --surface2:#10271c;
+ --surface3:#153526;
+ --border:#1b3b2b;
+ --green:#55d69a;
+ --green2:#2caa72;
+ --gold:#d6b77d;
+ --text:#eaf5ed;
+ --muted:#91aa99;
+ --dim:#607d6b;
+ --red:#ed8585;
+ --blue:#82b9ed;
+ --shadow:0 18px 60px #00000035;
+ --radius:14px;
 }
 
-* { box-sizing: border-box; }
+* {
+ box-sizing:border-box;
+}
+
+html {
+ scroll-behavior:smooth;
+}
 
 body {
-  margin: 0;
-  background:
-    radial-gradient(ellipse at 80% 0%, #153d2b55, transparent 40%),
-    var(--bg);
-  color: var(--white);
-  font-family: "DM Sans", sans-serif;
-  min-height: 100vh;
+ margin:0;
+ background:
+ radial-gradient(ellipse at 80% -10%,#17462e44,transparent 42%),
+ radial-gradient(ellipse at 0% 60%,#10332222,transparent 40%),
+ var(--bg);
+ color:var(--text);
+ font-family:"DM Sans",sans-serif;
+ min-height:100vh;
 }
 
-button, input, select { font: inherit; }
+button,input,select,textarea {
+ font:inherit;
+}
 
-button { cursor: pointer; }
+button {
+ cursor:pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+ outline:2px solid var(--green);
+ outline-offset:3px;
+}
+
+a {
+ color:inherit;
+ text-decoration:none;
+}
 
 .app {
-  display: flex;
-  min-height: 100vh;
+ min-height:100vh;
+ display:flex;
 }
 
 .sidebar {
-  width: 245px;
-  background: #091a13;
-  border-right: 1px solid var(--border);
-  padding: 30px 19px;
-  display: flex;
-  flex-direction: column;
-  gap: 35px;
-  flex-shrink: 0;
+ width:255px;
+ flex-shrink:0;
+ position:fixed;
+ inset:0 auto 0 0;
+ background:#091a12;
+ border-right:1px solid var(--border);
+ padding:27px 17px;
+ display:flex;
+ flex-direction:column;
+ z-index:20;
+ overflow-y:auto;
 }
 
 .brand {
-  font: 800 29px "Alegreya", serif;
-  letter-spacing: -.8px;
+ font:800 31px "Alegreya",serif;
+ letter-spacing:-1px;
 }
 
-.brand span { color: var(--green); }
+.brand span {
+ color:var(--green);
+}
 
 .brand-sub {
-  color: var(--muted);
-  font-size: 10px;
-  letter-spacing: 2px;
-  margin-top: 3px;
-  text-transform: uppercase;
+ font-size:9px;
+ letter-spacing:2.5px;
+ color:var(--dim);
+ margin-top:2px;
+ text-transform:uppercase;
 }
 
-.nav-label {
-  color: #6e8d7b;
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin: 0 0 12px 9px;
+.brand-area {
+ padding:0 10px 30px;
 }
 
-.nav-item {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #a7bdb0;
-  text-align: left;
-  padding: 12px;
-  border-radius: 9px;
-  margin-bottom: 5px;
-  font-size: 13px;
-  transition: .2s;
+.workspace-label {
+ font-size:9px;
+ color:var(--dim);
+ letter-spacing:2px;
+ text-transform:uppercase;
+ padding:17px 11px 9px;
 }
 
-.nav-item:hover, .nav-item.active {
-  background: #18372a;
-  color: #70e0a8;
+.nav-button {
+ display:flex;
+ align-items:center;
+ gap:12px;
+ width:100%;
+ border:1px solid transparent;
+ border-radius:9px;
+ background:transparent;
+ color:#9ab2a1;
+ text-align:left;
+ padding:11px 12px;
+ margin:2px 0;
+ font-size:12px;
+ transition:.2s;
+}
+
+.nav-button:hover {
+ background:var(--surface2);
+ color:var(--text);
+}
+
+.nav-button.active {
+ background:#173c29;
+ border-color:#265c3d;
+ color:var(--green);
+}
+
+.nav-icon {
+ width:19px;
+ text-align:center;
+ font-size:15px;
+}
+
+.nav-count {
+ margin-left:auto;
+ font-size:10px;
+ color:var(--dim);
 }
 
 .sidebar-bottom {
-  margin-top: auto;
-  border: 1px solid var(--border);
-  padding: 15px;
-  border-radius: 12px;
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.8;
+ margin-top:auto;
+ border:1px solid var(--border);
+ border-radius:11px;
+ padding:14px;
+ background:#0c2016;
+}
+
+.sidebar-bottom-title {
+ font:600 16px "Alegreya",serif;
+}
+
+.sidebar-bottom p {
+ font-size:10px;
+ color:var(--muted);
+ line-height:1.7;
+ margin-bottom:0;
 }
 
 .main {
-  flex: 1;
-  min-width: 0;
-  padding: 32px clamp(17px, 4vw, 55px);
+ margin-left:255px;
+ flex:1;
+ min-width:0;
+ padding:27px clamp(18px,4vw,52px);
+ max-width:1800px;
 }
 
 .topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 44px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+ margin-bottom:36px;
 }
 
 .breadcrumb {
-  color: var(--muted);
-  font-size: 12px;
+ color:var(--muted);
+ font-size:11px;
 }
 
-.status {
-  color: var(--green);
-  font-size: 11px;
-  border: 1px solid #285a42;
-  background: #10291d;
-  border-radius: 30px;
-  padding: 8px 12px;
+.top-actions {
+ display:flex;
+ gap:9px;
+ align-items:center;
 }
 
-h1 {
-  font: 700 clamp(34px, 5vw, 48px) "Alegreya", serif;
-  margin: 0;
-  letter-spacing: -.8px;
+.connection {
+ padding:8px 12px;
+ border:1px solid var(--border);
+ background:var(--surface);
+ border-radius:30px;
+ font-size:10px;
+ color:var(--muted);
 }
 
-.subtitle {
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 7px;
+.connection.connected {
+ color:var(--green);
+ border-color:#276344;
 }
 
-.connect-panel {
-  margin-top: 27px;
-  background: linear-gradient(115deg, #123528, #0c2119);
-  border: 1px solid #285b41;
-  border-radius: 16px;
-  padding: 23px;
+.icon-button {
+ width:36px;
+ height:36px;
+ border:1px solid var(--border);
+ border-radius:9px;
+ color:var(--muted);
+ background:var(--surface);
 }
 
-.panel-heading {
-  font: 600 21px "Alegreya", serif;
-  margin-bottom: 6px;
+.icon-button:hover {
+ color:var(--green);
+ border-color:var(--green2);
 }
 
-.panel-description {
-  color: var(--muted);
-  font-size: 12px;
-  margin-bottom: 18px;
+.page {
+ display:none;
+ animation:fade .25s ease;
+}
+
+.page.active {
+ display:block;
+}
+
+@keyframes fade {
+ from {opacity:0;transform:translateY(5px)}
+ to {opacity:1;transform:translateY(0)}
+}
+
+.hero {
+ display:flex;
+ justify-content:space-between;
+ align-items:flex-end;
+ gap:20px;
+}
+
+.hero h1 {
+ font:700 clamp(35px,5vw,49px) "Alegreya",serif;
+ line-height:1.05;
+ letter-spacing:-1px;
+ margin:0;
+}
+
+.hero h1 span {
+ color:var(--green);
+}
+
+.hero p {
+ font-size:12px;
+ color:var(--muted);
+ margin:10px 0 0;
+}
+
+.eyebrow {
+ color:var(--gold);
+ font-size:9px;
+ letter-spacing:2px;
+ text-transform:uppercase;
+ margin-bottom:10px;
+}
+
+.button {
+ border:1px solid var(--border);
+ border-radius:8px;
+ padding:10px 15px;
+ background:var(--surface2);
+ color:var(--text);
+ font-size:11px;
+ font-weight:600;
+ transition:.2s;
+}
+
+.button:hover {
+ border-color:var(--green);
+ color:var(--green);
+}
+
+.button.primary {
+ background:var(--green);
+ color:#082016;
+ border-color:var(--green);
+}
+
+.button.primary:hover {
+ background:#76e8b0;
+}
+
+.button.danger {
+ color:var(--red);
+}
+
+.connect-card {
+ margin-top:27px;
+ border:1px solid #2a6543;
+ background:linear-gradient(115deg,#143a27,#0c2117);
+ border-radius:var(--radius);
+ padding:24px;
+ box-shadow:var(--shadow);
+}
+
+.card-title {
+ font:600 22px "Alegreya",serif;
+}
+
+.card-subtitle {
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
+ line-height:1.6;
 }
 
 .connect-row {
-  display: flex;
-  gap: 10px;
+ display:flex;
+ gap:10px;
+ margin-top:19px;
 }
 
 .input {
-  background: #071810;
-  color: white;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 13px 15px;
-  outline: none;
-  min-width: 0;
+ min-width:0;
+ width:100%;
+ border:1px solid var(--border);
+ border-radius:8px;
+ background:#07170f;
+ color:var(--text);
+ padding:12px 14px;
+ outline:none;
+ font-size:12px;
 }
 
-.input:focus { border-color: var(--green); }
-
-#username { flex: 1; }
-
-.primary {
-  background: var(--green);
-  color: #062015;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 19px;
-  font-weight: 700;
-  transition: .2s;
+.input:focus {
+ border-color:var(--green);
 }
 
-.primary:hover {
-  background: #65e3a7;
-  transform: translateY(-1px);
+.connect-row input {
+ flex:1;
 }
 
 .message {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 12px;
-  min-height: 17px;
+ color:var(--muted);
+ font-size:10px;
+ margin-top:12px;
+ min-height:15px;
 }
 
-.message.error { color: var(--danger); }
+.message.error {
+ color:var(--red);
+}
 
-.profile {
-  display: none;
-  margin-top: 25px;
-  align-items: center;
-  gap: 17px;
-  padding: 19px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  border-radius: 13px;
+.profile-card {
+ display:none;
+ margin-top:20px;
+ padding:19px;
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:var(--radius);
+ align-items:center;
+ gap:16px;
 }
 
 .avatar {
-  width: 67px;
-  height: 67px;
-  border-radius: 50%;
-  border: 2px solid var(--green);
-  object-fit: cover;
+ width:65px;
+ height:65px;
+ object-fit:cover;
+ border-radius:50%;
+ border:2px solid var(--green);
 }
 
 .profile-name {
-  font: 700 23px "Alegreya", serif;
+ font:700 23px "Alegreya",serif;
 }
 
 .profile-login {
-  color: var(--green);
-  font-size: 12px;
+ color:var(--green);
+ font-size:11px;
 }
 
 .profile-bio {
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 5px;
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
 }
 
 .profile-link {
-  margin-left: auto;
-  color: var(--green);
-  text-decoration: none;
-  font-size: 12px;
+ margin-left:auto;
+ color:var(--green);
+ font-size:11px;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 13px;
-  margin-top: 22px;
+.stats-grid {
+ display:grid;
+ grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:13px;
+ margin-top:21px;
 }
 
-.stat {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 18px;
-  border-radius: 12px;
-  min-width: 0;
+.stat-card {
+ background:linear-gradient(145deg,#10251a,#0b1a12);
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:19px;
+ min-width:0;
+}
+
+.stat-top {
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
 }
 
 .stat-label {
-  font-size: 11px;
-  color: var(--muted);
+ color:var(--muted);
+ font-size:10px;
+}
+
+.stat-icon {
+ color:var(--green);
+ font-size:15px;
 }
 
 .stat-value {
-  font: 700 29px "Alegreya", serif;
-  margin-top: 9px;
-  overflow-wrap: anywhere;
+ font:700 30px "Alegreya",serif;
+ margin-top:9px;
+ overflow-wrap:anywhere;
 }
 
-.stat-note {
-  color: #668d78;
-  font-size: 10px;
-  margin-top: 4px;
+.stat-description {
+ color:var(--dim);
+ font-size:9px;
+ margin-top:3px;
 }
 
 .section-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  margin: 38px 0 17px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ margin:36px 0 16px;
 }
 
 .section-heading h2 {
-  font: 700 25px "Alegreya", serif;
-  margin: 0;
+ font:700 25px "Alegreya",serif;
+ margin:0;
 }
 
-.repo-count {
-  color: var(--muted);
-  font-size: 11px;
+.section-description {
+ color:var(--muted);
+ font-size:10px;
+ margin-top:4px;
 }
 
-.filters {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 17px;
+.small-count {
+ color:var(--muted);
+ font-size:10px;
 }
 
-.filters input { flex: 1; }
+.toolbar {
+ display:flex;
+ gap:9px;
+ margin-bottom:15px;
+}
 
-.filters select {
-  background: var(--panel);
-  color: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
-  max-width: 180px;
+.toolbar .input {
+ flex:1;
+}
+
+.select {
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:8px;
+ color:var(--text);
+ padding:10px;
+ font-size:10px;
+ max-width:170px;
 }
 
 .repo-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 13px;
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:13px;
 }
 
-.repo {
-  background: linear-gradient(145deg, #10251c, #0b1a13);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 19px;
-  transition: .2s;
-  min-width: 0;
+.repo-card {
+ background:linear-gradient(140deg,#10271b,#0b1b12);
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:18px;
+ min-width:0;
+ transition:.2s;
 }
 
-.repo:hover {
-  border-color: #448c67;
-  transform: translateY(-2px);
+.repo-card:hover {
+ border-color:#43875c;
+ transform:translateY(-2px);
 }
 
-.repo-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+.repo-header {
+ display:flex;
+ align-items:center;
+ gap:8px;
 }
 
-.repo-title {
-  color: #78dca5;
-  text-decoration: none;
-  font: 700 19px "Alegreya", serif;
-  overflow-wrap: anywhere;
+.repo-name {
+ color:#77dca5;
+ font:700 19px "Alegreya",serif;
+ overflow-wrap:anywhere;
 }
 
-.repo-title:hover { color: white; }
+.repo-name:hover {
+ color:white;
+}
 
 .visibility {
-  font-size: 9px;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  padding: 4px 7px;
-  border-radius: 20px;
-  flex-shrink: 0;
+ font-size:8px;
+ color:var(--muted);
+ border:1px solid var(--border);
+ border-radius:20px;
+ padding:4px 7px;
+ flex-shrink:0;
+}
+
+.favorite {
+ margin-left:auto;
+ background:transparent;
+ border:0;
+ color:var(--dim);
+ font-size:17px;
+}
+
+.favorite.selected {
+ color:var(--gold);
 }
 
 .repo-description {
-  color: #9bb0a3;
-  font-size: 12px;
-  line-height: 1.6;
-  min-height: 39px;
-  margin: 12px 0 17px;
-  overflow-wrap: anywhere;
+ color:#a0b6a8;
+ font-size:10px;
+ line-height:1.7;
+ margin:13px 0 17px;
+ min-height:34px;
+ overflow-wrap:anywhere;
 }
 
-.repo-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  color: var(--muted);
-  font-size: 10px;
+.repo-meta {
+ display:flex;
+ flex-wrap:wrap;
+ gap:13px;
+ color:var(--muted);
+ font-size:9px;
 }
 
 .language-dot {
-  width: 8px;
-  height: 8px;
-  display: inline-block;
-  border-radius: 50%;
-  background: var(--green);
-  margin-right: 5px;
+ display:inline-block;
+ height:8px;
+ width:8px;
+ background:var(--green);
+ border-radius:50%;
+ margin-right:5px;
 }
 
 .empty {
-  grid-column: 1/-1;
-  padding: 45px 20px;
-  text-align: center;
-  border: 1px dashed var(--border);
-  border-radius: 12px;
-  color: var(--muted);
-  font-size: 13px;
+ grid-column:1/-1;
+ text-align:center;
+ padding:45px 15px;
+ border:1px dashed var(--border);
+ border-radius:12px;
+ color:var(--muted);
+ font-size:11px;
+ line-height:2;
 }
 
-.loading { opacity: .55; pointer-events: none; }
+.panel {
+ background:var(--surface);
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:19px;
+ min-width:0;
+}
+
+.panel-heading {
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:16px;
+}
+
+.panel-heading h3 {
+ font:600 18px "Alegreya",serif;
+ margin:0;
+}
+
+.panel-heading span {
+ color:var(--muted);
+ font-size:9px;
+}
+
+.two-column {
+ display:grid;
+ grid-template-columns:1.2fr .8fr;
+ gap:14px;
+ margin-top:17px;
+}
+
+.chart-container {
+ position:relative;
+ width:100%;
+ height:260px;
+}
+
+.language-list {
+ display:grid;
+ gap:12px;
+}
+
+.language-item {
+ display:grid;
+ grid-template-columns:1fr auto;
+ gap:9px;
+ font-size:10px;
+ color:var(--muted);
+}
+
+.language-track {
+ height:5px;
+ border-radius:10px;
+ background:#1b3829;
+ grid-column:1/-1;
+ overflow:hidden;
+}
+
+.language-fill {
+ height:100%;
+ background:var(--green);
+ border-radius:10px;
+}
+
+.activity-list {
+ display:grid;
+ gap:0;
+}
+
+.activity-item {
+ display:flex;
+ gap:12px;
+ padding:13px 0;
+ border-bottom:1px solid var(--border);
+}
+
+.activity-item:last-child {
+ border-bottom:0;
+}
+
+.activity-dot {
+ width:8px;
+ height:8px;
+ border-radius:50%;
+ background:var(--green);
+ margin-top:5px;
+ flex-shrink:0;
+}
+
+.activity-text {
+ font-size:10px;
+ color:var(--muted);
+ line-height:1.6;
+}
+
+.activity-text strong {
+ color:var(--text);
+}
+
+.activity-time {
+ margin-left:auto;
+ color:var(--dim);
+ font-size:9px;
+ white-space:nowrap;
+}
+
+.page-title {
+ font:700 34px "Alegreya",serif;
+ margin:0;
+}
+
+.page-description {
+ color:var(--muted);
+ font-size:11px;
+ margin-top:5px;
+}
+
+.detail-grid {
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:13px;
+ margin-top:20px;
+}
+
+.detail-value {
+ font:700 25px "Alegreya",serif;
+ margin-top:9px;
+}
+
+.readme {
+ background:#0a1a11;
+ border:1px solid var(--border);
+ border-radius:12px;
+ padding:22px;
+ margin-top:16px;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+ font:11px/1.9 "JetBrains Mono",monospace;
+ color:#b5c9ba;
+ max-height:550px;
+ overflow:auto;
+}
+
+.settings-row {
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:15px;
+ padding:17px 0;
+ border-bottom:1px solid var(--border);
+}
+
+.settings-row:last-child {
+ border:0;
+}
+
+.settings-name {
+ font-size:11px;
+ font-weight:600;
+}
+
+.settings-desc {
+ color:var(--muted);
+ font-size:9px;
+ margin-top:4px;
+}
+
+.modal-backdrop {
+ position:fixed;
+ inset:0;
+ z-index:100;
+ background:#000b;
+ display:none;
+ align-items:center;
+ justify-content:center;
+ padding:16px;
+}
+
+.modal-backdrop.open {
+ display:flex;
+}
+
+.modal {
+ background:#0c2015;
+ border:1px solid var(--border);
+ border-radius:15px;
+ padding:23px;
+ width:min(530px,100%);
+ max-height:85vh;
+ overflow:auto;
+ box-shadow:var(--shadow);
+}
+
+.modal-header {
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:17px;
+}
+
+.modal-header h2 {
+ font:700 24px "Alegreya",serif;
+ margin:0;
+}
+
+.modal-close {
+ background:none;
+ border:0;
+ color:var(--muted);
+ font-size:20px;
+}
+
+.hidden {
+ display:none!important;
+}
+
+.toast-container {
+ position:fixed;
+ right:18px;
+ bottom:18px;
+ z-index:200;
+ display:grid;
+ gap:8px;
+}
+
+.toast {
+ background:#163626;
+ border:1px solid #39734e;
+ color:var(--text);
+ padding:13px 17px;
+ border-radius:9px;
+ box-shadow:var(--shadow);
+ font-size:11px;
+ animation:fade .2s ease;
+ max-width:300px;
+}
 
 footer {
-  border-top: 1px solid var(--border);
-  padding-top: 18px;
-  margin-top: 50px;
-  color: #668171;
-  font-size: 10px;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
+ border-top:1px solid var(--border);
+ margin-top:45px;
+ padding-top:17px;
+ display:flex;
+ justify-content:space-between;
+ color:var(--dim);
+ font-size:9px;
+ gap:10px;
 }
 
-@media(max-width:850px) {
-  .sidebar { width: 190px; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
+@media(max-width:1000px) {
+ .sidebar {
+  width:215px;
+ }
+ .main {
+  margin-left:215px;
+ }
+ .stats-grid {
+  grid-template-columns:repeat(2,1fr);
+ }
 }
 
-@media(max-width:600px) {
-  .sidebar { display: none; }
-  .main { padding: 20px 15px; }
-  .repo-grid { grid-template-columns: 1fr; }
-  .connect-row { flex-direction: column; }
-  .profile { flex-wrap: wrap; }
-  .profile-link { margin-left: 0; }
-  .filters { flex-direction: column; }
-  .filters select { max-width: none; }
-  .topbar { margin-bottom: 32px; }
+@media(max-width:700px) {
+ .sidebar {
+  position:relative;
+  width:100%;
+  height:auto;
+  border-right:0;
+  border-bottom:1px solid var(--border);
+  padding:12px;
+ }
+ .app {
+  display:block;
+ }
+ .brand-area {
+  padding:0 7px 10px;
+ }
+ .sidebar .workspace-label,
+ .sidebar-bottom {
+  display:none;
+ }
+ .sidebar nav {
+  display:flex;
+  flex-wrap:wrap;
+ }
+ .nav-button {
+  width:auto;
+  padding:9px;
+  font-size:10px;
+ }
+ .nav-icon {
+  display:none;
+ }
+ .main {
+  margin:0;
+  padding:20px 15px;
+ }
+ .two-column {
+  grid-template-columns:1fr;
+ }
+ .repo-grid {
+  grid-template-columns:1fr;
+ }
+ .hero {
+  align-items:flex-start;
+  flex-direction:column;
+ }
+ .connect-row {
+  flex-direction:column;
+ }
+ .toolbar {
+  flex-direction:column;
+ }
+ .toolbar .select {
+  max-width:none;
+ }
+ .profile-card {
+  flex-wrap:wrap;
+ }
+ .profile-link {
+  margin-left:0;
+ }
+ .detail-grid {
+  grid-template-columns:1fr 1fr;
+ }
 }
 </style>
 </head>
@@ -434,430 +917,1502 @@ footer {
 <div class="app">
 
 <aside class="sidebar">
-  <div>
-    <div class="brand">Repo<span>Pilot</span></div>
-    <div class="brand-sub">Developer workspace</div>
-  </div>
 
-  <div>
-    <div class="nav-label">Workspace</div>
-    <button class="nav-item active" onclick="showSection('overview')">◈ &nbsp; Overview</button>
-    <button class="nav-item" onclick="showSection('repositories')">▤ &nbsp; Repositories</button>
-    <button class="nav-item" onclick="showSection('languages')">⌘ &nbsp; Languages</button>
-  </div>
+ <div class="brand-area">
+  <div class="brand">Repo<span>Pilot</span></div>
+  <div class="brand-sub">Developer intelligence</div>
+ </div>
 
-  <div>
-    <div class="nav-label">Account</div>
-    <button class="nav-item" onclick="connectFocus()">↗ &nbsp; Connect GitHub</button>
-    <button class="nav-item" onclick="disconnect()">⏻ &nbsp; Disconnect</button>
-  </div>
+ <nav>
+  <div class="workspace-label">Workspace</div>
 
-  <div class="sidebar-bottom">
-    REPOPILOT V1.0<br>
-    GitHub public API<br>
-    Local browser workspace
-  </div>
+  <button class="nav-button active" data-page="overview">
+   <span class="nav-icon">◈</span> Overview
+  </button>
+
+  <button class="nav-button" data-page="repositories">
+   <span class="nav-icon">▤</span> Repositories
+   <span class="nav-count" id="navRepoCount">—</span>
+  </button>
+
+  <button class="nav-button" data-page="analytics">
+   <span class="nav-icon">⌁</span> Analytics
+  </button>
+
+  <button class="nav-button" data-page="favorites">
+   <span class="nav-icon">☆</span> Favorites
+   <span class="nav-count" id="favoriteCount">0</span>
+  </button>
+
+  <div class="workspace-label">System</div>
+
+  <button class="nav-button" data-page="activity">
+   <span class="nav-icon">◷</span> Activity
+  </button>
+
+  <button class="nav-button" data-page="settings">
+   <span class="nav-icon">⚙</span> Settings
+  </button>
+ </nav>
+
+ <div class="sidebar-bottom">
+  <div class="sidebar-bottom-title">Your developer space.</div>
+  <p>One workspace. Your projects. Your development intelligence.</p>
+ </div>
+
 </aside>
 
 <main class="main">
 
-  <div class="topbar">
-    <div class="breadcrumb">Workspace / Dashboard</div>
-    <div class="status" id="connectionStatus">● Not connected</div>
+ <div class="topbar">
+  <div class="breadcrumb">RepoPilot / <span id="breadcrumb">Overview</span></div>
+  <div class="top-actions">
+   <div class="connection" id="connectionStatus">● Disconnected</div>
+   <button class="icon-button" id="refreshButton" title="Refresh">↻</button>
+  </div>
+ </div>
+
+<!-- OVERVIEW -->
+
+<section class="page active" id="page-overview">
+
+ <div class="hero">
+  <div>
+   <div class="eyebrow">Developer workspace / 01</div>
+   <h1>Build. Track.<br><span>Understand.</span></h1>
+   <p>Your GitHub ecosystem, organized in one place.</p>
+  </div>
+  <button class="button primary" id="quickConnect">Connect GitHub ↗</button>
+ </div>
+
+ <div class="connect-card" id="connectCard">
+  <div class="card-title">Connect your GitHub profile</div>
+  <div class="card-subtitle">
+   Enter a username to explore public repositories. No password or access token required.
+  </div>
+  <div class="connect-row">
+   <input class="input" id="username" value="rbakhtiar" placeholder="GitHub username">
+   <button class="button primary" id="connectButton">Connect account ↗</button>
+  </div>
+  <div class="message" id="message">Powered by the GitHub REST API.</div>
+ </div>
+
+ <div class="profile-card" id="profileCard">
+  <img class="avatar" id="avatar" alt="Profile picture">
+  <div>
+   <div class="profile-name" id="profileName"></div>
+   <div class="profile-login" id="profileLogin"></div>
+   <div class="profile-bio" id="profileBio"></div>
+  </div>
+  <a class="profile-link" id="profileLink" target="_blank" rel="noopener">GitHub profile ↗</a>
+ </div>
+
+ <div class="stats-grid">
+  <div class="stat-card">
+   <div class="stat-top">
+    <div class="stat-label">Repositories</div>
+    <span class="stat-icon">▤</span>
+   </div>
+   <div class="stat-value" id="repoStat">—</div>
+   <div class="stat-description">Public repositories loaded</div>
   </div>
 
-  <header>
-    <h1>Your development,<br>under one roof.</h1>
-    <div class="subtitle">A central workspace for your GitHub projects.</div>
-  </header>
+  <div class="stat-card">
+   <div class="stat-top">
+    <div class="stat-label">Stars</div>
+    <span class="stat-icon">☆</span>
+   </div>
+   <div class="stat-value" id="starStat">—</div>
+   <div class="stat-description">Total repository stars</div>
+  </div>
 
-  <section class="connect-panel" id="connectPanel">
-    <div class="panel-heading">Connect your GitHub profile</div>
-    <div class="panel-description">
-      Enter a GitHub username to import public profile and repository information.
-    </div>
-    <div class="connect-row">
-      <input class="input" id="username" placeholder="GitHub username" value="rbakhtiar">
-      <button class="primary" id="connectButton" onclick="connectGitHub()">Connect account ↗</button>
-    </div>
-    <div class="message" id="message">No password or access token required for public repositories.</div>
-  </section>
+  <div class="stat-card">
+   <div class="stat-top">
+    <div class="stat-label">Forks</div>
+    <span class="stat-icon">⑂</span>
+   </div>
+   <div class="stat-value" id="forkStat">—</div>
+   <div class="stat-description">Total repository forks</div>
+  </div>
 
-  <section class="profile" id="profile">
-    <img class="avatar" id="avatar" alt="GitHub avatar">
-    <div>
-      <div class="profile-name" id="profileName"></div>
-      <div class="profile-login" id="profileLogin"></div>
-      <div class="profile-bio" id="profileBio"></div>
-    </div>
-    <a class="profile-link" id="profileLink" target="_blank" rel="noopener">View profile ↗</a>
-  </section>
+  <div class="stat-card">
+   <div class="stat-top">
+    <div class="stat-label">Languages</div>
+    <span class="stat-icon">⌘</span>
+   </div>
+   <div class="stat-value" id="languageStat">—</div>
+   <div class="stat-description">Detected languages</div>
+  </div>
+ </div>
 
-  <section class="stats" id="stats">
-    <div class="stat">
-      <div class="stat-label">Repositories loaded</div>
-      <div class="stat-value" id="repoStat">—</div>
-      <div class="stat-note">Public repositories</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Total stars</div>
-      <div class="stat-value" id="starStat">—</div>
-      <div class="stat-note">Across loaded repositories</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Total forks</div>
-      <div class="stat-value" id="forkStat">—</div>
-      <div class="stat-note">Across loaded repositories</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Languages</div>
-      <div class="stat-value" id="languageStat">—</div>
-      <div class="stat-note">Detected primary languages</div>
-    </div>
-  </section>
+ <div class="section-heading">
+  <div>
+   <h2>Recent repositories</h2>
+   <div class="section-description">Your recently updated projects.</div>
+  </div>
+  <button class="button" data-go="repositories">View all ↗</button>
+ </div>
 
-  <section id="repositories">
-    <div class="section-heading">
-      <h2>Repositories</h2>
-      <span class="repo-count" id="repoCount">Awaiting connection</span>
-    </div>
+ <div class="repo-grid" id="recentRepos">
+  <div class="empty">Connect GitHub to load your projects.</div>
+ </div>
 
-    <div class="filters">
-      <input class="input" id="search" placeholder="Search repositories..." oninput="renderRepos()">
-      <select id="languageFilter" onchange="renderRepos()">
-        <option value="">All languages</option>
-      </select>
-      <select id="sort" onchange="renderRepos()">
-        <option value="updated">Recently updated</option>
-        <option value="stars">Most stars</option>
-        <option value="forks">Most forks</option>
-        <option value="name">Name A–Z</option>
-      </select>
-    </div>
+ <div class="two-column">
+  <div class="panel">
+   <div class="panel-heading">
+    <h3>Language ecosystem</h3>
+    <span>PRIMARY LANGUAGES</span>
+   </div>
+   <div class="chart-container">
+    <canvas id="overviewChart"></canvas>
+   </div>
+  </div>
 
-    <div class="repo-grid" id="repoGrid">
-      <div class="empty">
-        Connect your GitHub profile to see your repositories here.
-      </div>
-    </div>
-  </section>
+  <div class="panel">
+   <div class="panel-heading">
+    <h3>Development activity</h3>
+    <span>REPOSITORY UPDATES</span>
+   </div>
+   <div class="activity-list" id="overviewActivity">
+    <div class="empty">Activity appears after connecting.</div>
+   </div>
+  </div>
+ </div>
 
-  <section id="languages">
-    <div class="section-heading">
-      <h2>Language distribution</h2>
-    </div>
-    <div class="stat" id="languagePanel">
-      <div class="stat-label">Your programming ecosystem</div>
-      <div id="languageList" style="margin-top:15px;color:var(--muted);font-size:12px">
-        Connect GitHub to calculate your language distribution.
-      </div>
-    </div>
-  </section>
+</section>
 
-  <footer>
-    <span>RepoPilot — Built for developers.</span>
-    <span>Powered by GitHub REST API</span>
-  </footer>
+<!-- REPOSITORIES -->
+
+<section class="page" id="page-repositories">
+
+ <div class="eyebrow">Workspace / 02</div>
+ <h1 class="page-title">Repositories</h1>
+ <p class="page-description">Explore, filter and organize your projects.</p>
+
+ <div class="section-heading">
+  <h2>Project explorer</h2>
+  <span class="small-count" id="repoCount">0 repositories</span>
+ </div>
+
+ <div class="toolbar">
+  <input class="input" id="repoSearch" placeholder="Search repositories by name or description...">
+  <select class="select" id="languageFilter">
+   <option value="">All languages</option>
+  </select>
+  <select class="select" id="sortFilter">
+   <option value="updated">Recently updated</option>
+   <option value="stars">Most stars</option>
+   <option value="forks">Most forks</option>
+   <option value="name">Name A–Z</option>
+   <option value="created">Newest created</option>
+  </select>
+ </div>
+
+ <div class="repo-grid" id="repoGrid">
+  <div class="empty">No repositories loaded.</div>
+ </div>
+
+</section>
+
+<!-- ANALYTICS -->
+
+<section class="page" id="page-analytics">
+
+ <div class="eyebrow">Intelligence / 03</div>
+ <h1 class="page-title">Analytics</h1>
+ <p class="page-description">Understand the structure of your public GitHub projects.</p>
+
+ <div class="stats-grid">
+  <div class="stat-card">
+   <div class="stat-label">Average stars</div>
+   <div class="stat-value" id="averageStars">—</div>
+  </div>
+  <div class="stat-card">
+   <div class="stat-label">Original projects</div>
+   <div class="stat-value" id="originalRepos">—</div>
+  </div>
+  <div class="stat-card">
+   <div class="stat-label">Forked projects</div>
+   <div class="stat-value" id="forkedRepos">—</div>
+  </div>
+  <div class="stat-card">
+   <div class="stat-label">Archived projects</div>
+   <div class="stat-value" id="archivedRepos">—</div>
+  </div>
+ </div>
+
+ <div class="two-column">
+  <div class="panel">
+   <div class="panel-heading">
+    <h3>Language distribution</h3>
+    <span>REPOSITORY COUNTS</span>
+   </div>
+   <div class="chart-container">
+    <canvas id="languageChart"></canvas>
+   </div>
+  </div>
+
+  <div class="panel">
+   <div class="panel-heading">
+    <h3>Star distribution</h3>
+    <span>TOP PROJECTS</span>
+   </div>
+   <div class="chart-container">
+    <canvas id="starsChart"></canvas>
+   </div>
+  </div>
+ </div>
+
+ <div class="panel" style="margin-top:15px">
+  <div class="panel-heading">
+   <h3>Language breakdown</h3>
+   <span>DETECTED LANGUAGES</span>
+  </div>
+  <div class="language-list" id="languageBreakdown">
+   Connect an account to generate analytics.
+  </div>
+ </div>
+
+</section>
+
+<!-- FAVORITES -->
+
+<section class="page" id="page-favorites">
+
+ <div class="eyebrow">Workspace / 04</div>
+ <h1 class="page-title">Favorites</h1>
+ <p class="page-description">Your selected repositories in one collection.</p>
+
+ <div class="section-heading">
+  <h2>Saved projects</h2>
+  <span class="small-count" id="favoritePageCount">0 saved</span>
+ </div>
+
+ <div class="repo-grid" id="favoriteGrid">
+  <div class="empty">Your favorites will appear here.</div>
+ </div>
+
+</section>
+
+<!-- ACTIVITY -->
+
+<section class="page" id="page-activity">
+
+ <div class="eyebrow">Intelligence / 05</div>
+ <h1 class="page-title">Activity</h1>
+ <p class="page-description">A timeline of repository update information.</p>
+
+ <div class="panel" style="margin-top:25px">
+  <div class="panel-heading">
+   <h3>Repository timeline</h3>
+   <span>LAST UPDATED</span>
+  </div>
+  <div class="activity-list" id="activityTimeline">
+   <div class="empty">Connect GitHub to generate a timeline.</div>
+  </div>
+ </div>
+
+</section>
+
+<!-- SETTINGS -->
+
+<section class="page" id="page-settings">
+
+ <div class="eyebrow">Configuration / 06</div>
+ <h1 class="page-title">Settings</h1>
+ <p class="page-description">Configure your RepoPilot workspace.</p>
+
+ <div class="panel" style="margin-top:25px">
+
+  <div class="panel-heading">
+   <h3>Workspace preferences</h3>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Remember last username</div>
+    <div class="settings-desc">Save the last public GitHub username locally.</div>
+   </div>
+   <input type="checkbox" id="rememberUsername" checked>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Automatic favorites</div>
+    <div class="settings-desc">Keep saved repository selections in local storage.</div>
+   </div>
+   <input type="checkbox" id="rememberFavorites" checked>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Refresh on startup</div>
+    <div class="settings-desc">Refresh the public repository data on page load.</div>
+   </div>
+   <input type="checkbox" id="autoRefresh">
+  </div>
+
+ </div>
+
+ <div class="panel" style="margin-top:15px">
+  <div class="panel-heading">
+   <h3>Data management</h3>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Export repositories</div>
+    <div class="settings-desc">Download loaded public repository metadata as JSON.</div>
+   </div>
+   <button class="button" id="exportButton">Export JSON ↗</button>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Clear favorites</div>
+    <div class="settings-desc">Remove locally saved favorites.</div>
+   </div>
+   <button class="button danger" id="clearFavorites">Clear</button>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Disconnect account</div>
+    <div class="settings-desc">Clear the displayed GitHub account and data.</div>
+   </div>
+   <button class="button danger" id="disconnectButton">Disconnect</button>
+  </div>
+
+ </div>
+
+ <div class="panel" style="margin-top:15px">
+  <div class="panel-heading">
+   <h3>About RepoPilot</h3>
+  </div>
+  <p class="card-subtitle">
+   RepoPilot is a browser-based GitHub workspace. This version reads public repository information using GitHub's REST API. It does not store GitHub passwords or private access tokens.
+  </p>
+  <p class="card-subtitle">Version 2.0 · Single-file application</p>
+ </div>
+
+</section>
+
+<footer>
+ <span>RepoPilot — Developer intelligence.</span>
+ <span>Public GitHub API · V2.0</span>
+</footer>
 
 </main>
 </div>
 
+<!-- REPOSITORY DETAIL MODAL -->
+
+<div class="modal-backdrop" id="detailModal">
+ <div class="modal">
+  <div class="modal-header">
+   <h2 id="modalTitle">Repository</h2>
+   <button class="modal-close" id="closeModal">×</button>
+  </div>
+
+  <p class="card-subtitle" id="modalDescription"></p>
+
+  <div class="detail-grid">
+   <div class="stat-card">
+    <div class="stat-label">Stars</div>
+    <div class="detail-value" id="modalStars">0</div>
+   </div>
+   <div class="stat-card">
+    <div class="stat-label">Forks</div>
+    <div class="detail-value" id="modalForks">0</div>
+   </div>
+   <div class="stat-card">
+    <div class="stat-label">Issues</div>
+    <div class="detail-value" id="modalIssues">0</div>
+   </div>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Primary language</div>
+    <div class="settings-desc" id="modalLanguage">Unknown</div>
+   </div>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Last updated</div>
+    <div class="settings-desc" id="modalUpdated">—</div>
+   </div>
+  </div>
+
+  <div class="settings-row">
+   <div>
+    <div class="settings-name">Default branch</div>
+    <div class="settings-desc" id="modalBranch">—</div>
+   </div>
+  </div>
+
+  <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:18px">
+   <a class="button primary" id="modalGithub" target="_blank" rel="noopener">Open on GitHub ↗</a>
+   <button class="button" id="modalReadme">View README</button>
+   <button class="button" id="modalFavorite">☆ Favorite</button>
+  </div>
+
+  <pre class="readme hidden" id="readmeContent"></pre>
+ </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
 <script>
-let repositories = [];
-let account = null;
+"use strict";
+
+/* ========================================
+   REPOPILOT APPLICATION CORE
+======================================== */
+
+const RepoPilot = {
+ version:"2.0.0",
+ username:"",
+ account:null,
+ repositories:[],
+ favorites:new Set(),
+ currentRepository:null,
+ charts:{},
+ cache:new Map(),
+ loading:false
+};
 
 const $ = id => document.getElementById(id);
 
-async function connectGitHub() {
-  const username = $("username").value.trim();
+const STORAGE = {
+ favorites:"repopilot_favorites_v2",
+ username:"repopilot_username_v2",
+ preferences:"repopilot_preferences_v2"
+};
 
-  if (!username) {
-    showMessage("Enter a GitHub username first.", true);
-    return;
-  }
+const API = "https://api.github.com";
 
-  $("connectButton").disabled = true;
-  $("connectButton").textContent = "Connecting...";
-  $("connectPanel").classList.add("loading");
-  showMessage("Fetching GitHub profile and repositories...");
+/* ========================================
+   STORAGE
+======================================== */
 
+const Store = {
+ read(key,fallback=null) {
   try {
-    const headers = {
-      "Accept": "application/vnd.github+json"
-    };
-
-    const profileResponse = await fetch(
-      `https://api.github.com/users/${encodeURIComponent(username)}`,
-      { headers }
-    );
-
-    if (!profileResponse.ok) {
-      if (profileResponse.status === 404) {
-        throw new Error("GitHub user not found. Check the username.");
-      }
-      if (profileResponse.status === 403) {
-        throw new Error("GitHub API rate limit reached. Try again later.");
-      }
-      throw new Error("Unable to retrieve the GitHub profile.");
-    }
-
-    const profile = await profileResponse.json();
-
-    const repoResponse = await fetch(
-      `https://api.github.com/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated&type=owner`,
-      { headers }
-    );
-
-    if (!repoResponse.ok) {
-      if (repoResponse.status === 403) {
-        throw new Error("GitHub API rate limit reached. Try again later.");
-      }
-      throw new Error("Unable to retrieve repositories.");
-    }
-
-    const repos = await repoResponse.json();
-
-    account = profile;
-    repositories = repos;
-
-    renderProfile();
-    renderStats();
-    populateLanguages();
-    renderRepos();
-
-    $("connectionStatus").textContent = "● Connected: " + profile.login;
-    $("connectionStatus").style.color = "var(--green)";
-    $("profile").style.display = "flex";
-
-    showMessage("Successfully loaded " + repos.length + " public repositories.");
-
-  } catch (error) {
-    showMessage(error.message, true);
-  } finally {
-    $("connectButton").disabled = false;
-    $("connectButton").textContent = "Connect account ↗";
-    $("connectPanel").classList.remove("loading");
+   const value=localStorage.getItem(key);
+   return value===null?fallback:JSON.parse(value);
+  } catch {
+   return fallback;
   }
-}
+ },
 
-function showMessage(message, error = false) {
-  $("message").textContent = message;
-  $("message").className = error ? "message error" : "message";
-}
-
-function renderProfile() {
-  $("avatar").src = account.avatar_url;
-  $("profileName").textContent = account.name || account.login;
-  $("profileLogin").textContent = "@" + account.login;
-  $("profileBio").textContent = account.bio || "GitHub developer";
-  $("profileLink").href = account.html_url;
-}
-
-function renderStats() {
-  const stars = repositories.reduce((sum, repo) => sum + repo.stargazers_count, 0);
-  const forks = repositories.reduce((sum, repo) => sum + repo.forks_count, 0);
-
-  const languages = new Set(
-    repositories.map(repo => repo.language).filter(Boolean)
-  );
-
-  $("repoStat").textContent = repositories.length;
-  $("starStat").textContent = stars.toLocaleString();
-  $("forkStat").textContent = forks.toLocaleString();
-  $("languageStat").textContent = languages.size;
-}
-
-function populateLanguages() {
-  const languages = [...new Set(
-    repositories.map(repo => repo.language).filter(Boolean)
-  )].sort();
-
-  $("languageFilter").innerHTML =
-    '<option value="">All languages</option>';
-
-  languages.forEach(language => {
-    const option = document.createElement("option");
-    option.value = language;
-    option.textContent = language;
-    $("languageFilter").appendChild(option);
-  });
-
-  const counts = {};
-  repositories.forEach(repo => {
-    if (repo.language) {
-      counts[repo.language] = (counts[repo.language] || 0) + 1;
-    }
-  });
-
-  const sorted = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1]);
-
-  $("languageList").replaceChildren();
-
-  if (!sorted.length) {
-    $("languageList").textContent = "No language information available.";
-    return;
+ write(key,value) {
+  try {
+   localStorage.setItem(key,JSON.stringify(value));
+  } catch {
+   toast("Browser storage is unavailable.");
   }
+ },
 
-  sorted.forEach(([language, count]) => {
-    const row = document.createElement("div");
-    row.style.cssText =
-      "display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)";
+ remove(key) {
+  localStorage.removeItem(key);
+ }
+};
 
-    const name = document.createElement("span");
-    name.textContent = language;
+function loadPreferences() {
+ const prefs=Store.read(STORAGE.preferences,{});
 
-    const value = document.createElement("strong");
-    value.style.color = "var(--green)";
-    value.textContent = count + " repositories";
+ $("rememberUsername").checked=prefs.rememberUsername!==false;
+ $("rememberFavorites").checked=prefs.rememberFavorites!==false;
+ $("autoRefresh").checked=prefs.autoRefresh===true;
 
-    row.append(name, value);
-    $("languageList").appendChild(row);
-  });
+ if($("rememberFavorites").checked) {
+  RepoPilot.favorites=new Set(Store.read(STORAGE.favorites,[]));
+ }
+
+ if($("rememberUsername").checked) {
+  $("username").value=Store.read(STORAGE.username,"rbakhtiar");
+ }
 }
 
-function renderRepos() {
-  const query = $("search").value.toLowerCase().trim();
-  const language = $("languageFilter").value;
-  const sort = $("sort").value;
+function savePreferences() {
+ const prefs={
+  rememberUsername:$("rememberUsername").checked,
+  rememberFavorites:$("rememberFavorites").checked,
+  autoRefresh:$("autoRefresh").checked
+ };
 
-  let filtered = repositories.filter(repo => {
-    const matchesSearch =
-      repo.name.toLowerCase().includes(query) ||
-      (repo.description || "").toLowerCase().includes(query);
+ Store.write(STORAGE.preferences,prefs);
 
-    const matchesLanguage =
-      !language || repo.language === language;
+ if(!prefs.rememberFavorites) {
+  Store.remove(STORAGE.favorites);
+ }
 
-    return matchesSearch && matchesLanguage;
-  });
+ if(!prefs.rememberUsername) {
+  Store.remove(STORAGE.username);
+ }
 
-  if (sort === "stars") {
-    filtered.sort((a,b) => b.stargazers_count - a.stargazers_count);
-  } else if (sort === "forks") {
-    filtered.sort((a,b) => b.forks_count - a.forks_count);
-  } else if (sort === "name") {
-    filtered.sort((a,b) => a.name.localeCompare(b.name));
-  } else {
-    filtered.sort((a,b) =>
-      new Date(b.updated_at) - new Date(a.updated_at)
-    );
-  }
-
-  $("repoCount").textContent =
-    filtered.length + " of " + repositories.length + " repositories";
-
-  const grid = $("repoGrid");
-  grid.replaceChildren();
-
-  if (!filtered.length) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "No repositories match your filters.";
-    grid.appendChild(empty);
-    return;
-  }
-
-  filtered.forEach(repo => {
-    const card = document.createElement("article");
-    card.className = "repo";
-
-    const top = document.createElement("div");
-    top.className = "repo-top";
-
-    const link = document.createElement("a");
-    link.className = "repo-title";
-    link.href = repo.html_url;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.textContent = repo.name;
-
-    const visibility = document.createElement("span");
-    visibility.className = "visibility";
-    visibility.textContent = repo.private ? "PRIVATE" : "PUBLIC";
-
-    top.append(link, visibility);
-
-    const description = document.createElement("div");
-    description.className = "repo-description";
-    description.textContent =
-      repo.description || "No description provided.";
-
-    const footer = document.createElement("div");
-    footer.className = "repo-footer";
-
-    const language = document.createElement("span");
-    language.innerHTML = "";
-    if (repo.language) {
-      const dot = document.createElement("span");
-      dot.className = "language-dot";
-      language.append(dot, document.createTextNode(repo.language));
-    } else {
-      language.textContent = "No language";
-    }
-
-    const stars = document.createElement("span");
-    stars.textContent = "★ " + repo.stargazers_count;
-
-    const forks = document.createElement("span");
-    forks.textContent = "⑂ " + repo.forks_count;
-
-    const updated = document.createElement("span");
-    updated.textContent =
-      "Updated " + new Date(repo.updated_at).toLocaleDateString();
-
-    footer.append(language, stars, forks, updated);
-    card.append(top, description, footer);
-    grid.appendChild(card);
-  });
+ saveFavorites();
 }
 
-function disconnect() {
-  account = null;
-  repositories = [];
-
-  $("profile").style.display = "none";
-  $("connectionStatus").textContent = "● Not connected";
-  $("repoStat").textContent = "—";
-  $("starStat").textContent = "—";
-  $("forkStat").textContent = "—";
-  $("languageStat").textContent = "—";
-  $("repoCount").textContent = "Awaiting connection";
-  $("repoGrid").innerHTML =
-    '<div class="empty">Connect your GitHub profile to see your repositories here.</div>';
-
-  $("languageList").textContent =
-    "Connect GitHub to calculate your language distribution.";
-
-  $("languageFilter").innerHTML =
-    '<option value="">All languages</option>';
-
-  showMessage("Disconnected. Your public GitHub data is no longer displayed.");
+function saveFavorites() {
+ if($("rememberFavorites").checked) {
+  Store.write(STORAGE.favorites,[...RepoPilot.favorites]);
+ }
 }
 
-function connectFocus() {
-  $("connectPanel").scrollIntoView({ behavior: "smooth" });
-  $("username").focus();
+/* ========================================
+   NOTIFICATIONS
+======================================== */
+
+function toast(message) {
+ const element=document.createElement("div");
+ element.className="toast";
+ element.textContent=message;
+
+ $("toastContainer").appendChild(element);
+
+ setTimeout(()=>element.remove(),3500);
 }
 
-function showSection(section) {
-  const target = $(section);
-  if (target) target.scrollIntoView({ behavior: "smooth" });
+/* ========================================
+   NAVIGATION
+======================================== */
 
-  document.querySelectorAll(".nav-item").forEach(item => {
-    item.classList.remove("active");
-  });
+function navigate(page) {
+ document.querySelectorAll(".page").forEach(item=>{
+  item.classList.remove("active");
+ });
 
-  event.currentTarget.classList.add("active");
+ const target=$("page-"+page);
+
+ if(!target) return;
+
+ target.classList.add("active");
+
+ document.querySelectorAll(".nav-button").forEach(button=>{
+  button.classList.toggle("active",button.dataset.page===page);
+ });
+
+ const names={
+  overview:"Overview",
+  repositories:"Repositories",
+  analytics:"Analytics",
+  favorites:"Favorites",
+  activity:"Activity",
+  settings:"Settings"
+ };
+
+ $("breadcrumb").textContent=names[page]||"Workspace";
+
+ if(page==="repositories") renderRepositories();
+ if(page==="analytics") renderAnalytics();
+ if(page==="favorites") renderFavorites();
+ if(page==="activity") renderActivity();
 }
 
-// Enter key connects the account.
-$("username").addEventListener("keydown", event => {
-  if (event.key === "Enter") connectGitHub();
+document.querySelectorAll(".nav-button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  navigate(button.dataset.page);
+ });
 });
 
-// Load the default public profile.
-connectGitHub();
+document.querySelectorAll("[data-go]").forEach(button=>{
+ button.addEventListener("click",()=>{
+  navigate(button.dataset.go);
+ });
+});
+
+/* ========================================
+   GITHUB API
+======================================== */
+
+async function githubRequest(path) {
+ const url=API+path;
+
+ const cached=RepoPilot.cache.get(url);
+
+ if(cached && Date.now()-cached.time<60000) {
+  return cached.data;
+ }
+
+ const response=await fetch(url,{
+  headers:{
+   Accept:"application/vnd.github+json",
+   "X-GitHub-Api-Version":"2022-11-28"
+  }
+ });
+
+ if(response.status===404) {
+  throw new Error("GitHub resource not found.");
+ }
+
+ if(response.status===403) {
+  throw new Error("GitHub API rate limit reached. Try later.");
+ }
+
+ if(!response.ok) {
+  throw new Error("GitHub returned HTTP "+response.status);
+ }
+
+ const data=await response.json();
+
+ RepoPilot.cache.set(url,{
+  data,
+  time:Date.now()
+ });
+
+ return data;
+}
+
+async function connectGitHub() {
+ if(RepoPilot.loading) return;
+
+ const username=$("username").value.trim();
+
+ if(!username) {
+  setMessage("Enter a GitHub username.",true);
+  return;
+ }
+
+ if(!/^[a-zA-Z0-9-]{1,39}$/.test(username)) {
+  setMessage("That username format is invalid.",true);
+  return;
+ }
+
+ RepoPilot.loading=true;
+
+ $("connectButton").textContent="Connecting...";
+ $("connectButton").disabled=true;
+
+ setMessage("Contacting GitHub...");
+
+ try {
+  const profile=await githubRequest(
+   "/users/"+encodeURIComponent(username)
+  );
+
+  const repositories=await githubRequest(
+   "/users/"+encodeURIComponent(username)+
+   "/repos?per_page=100&sort=updated&type=owner"
+  );
+
+  RepoPilot.account=profile;
+  RepoPilot.username=profile.login;
+  RepoPilot.repositories=repositories;
+
+  if($("rememberUsername").checked) {
+   Store.write(STORAGE.username,username);
+  }
+
+  renderAll();
+
+  $("connectionStatus").textContent="● "+profile.login;
+  $("connectionStatus").classList.add("connected");
+
+  $("profileCard").style.display="flex";
+
+  setMessage(
+   "Successfully connected. Loaded "+
+   repositories.length+" public repositories."
+  );
+
+  toast("GitHub profile connected.");
+
+ } catch(error) {
+  setMessage(error.message,true);
+  toast(error.message);
+ } finally {
+  RepoPilot.loading=false;
+  $("connectButton").disabled=false;
+  $("connectButton").textContent="Connect account ↗";
+ }
+}
+
+function setMessage(message,error=false) {
+ const element=$("message");
+ element.textContent=message;
+ element.className=error?"message error":"message";
+}
+
+/* ========================================
+   PROFILE
+======================================== */
+
+function renderProfile() {
+ const profile=RepoPilot.account;
+
+ if(!profile) return;
+
+ $("avatar").src=profile.avatar_url;
+ $("profileName").textContent=profile.name||profile.login;
+ $("profileLogin").textContent="@"+profile.login;
+ $("profileBio").textContent=profile.bio||"GitHub developer";
+ $("profileLink").href=profile.html_url;
+}
+
+/* ========================================
+   STATISTICS
+======================================== */
+
+function getStatistics() {
+ const repos=RepoPilot.repositories;
+
+ const languages={};
+
+ repos.forEach(repo=>{
+  if(repo.language) {
+   languages[repo.language]=(languages[repo.language]||0)+1;
+  }
+ });
+
+ return {
+  repositories:repos.length,
+  stars:repos.reduce((a,r)=>a+r.stargazers_count,0),
+  forks:repos.reduce((a,r)=>a+r.forks_count,0),
+  languages,
+  languageCount:Object.keys(languages).length,
+  original:repos.filter(r=>!r.fork).length,
+  forked:repos.filter(r=>r.fork).length,
+  archived:repos.filter(r=>r.archived).length
+ };
+}
+
+function renderStatistics() {
+ const stats=getStatistics();
+
+ $("repoStat").textContent=stats.repositories;
+ $("starStat").textContent=stats.stars.toLocaleString();
+ $("forkStat").textContent=stats.forks.toLocaleString();
+ $("languageStat").textContent=stats.languageCount;
+
+ $("navRepoCount").textContent=stats.repositories;
+
+ $("averageStars").textContent=stats.repositories?
+  (stats.stars/stats.repositories).toFixed(1):"0";
+
+ $("originalRepos").textContent=stats.original;
+ $("forkedRepos").textContent=stats.forked;
+ $("archivedRepos").textContent=stats.archived;
+}
+
+/* ========================================
+   REPOSITORY CARDS
+======================================== */
+
+function createRepoCard(repo) {
+ const card=document.createElement("article");
+ card.className="repo-card";
+
+ const header=document.createElement("div");
+ header.className="repo-header";
+
+ const link=document.createElement("a");
+ link.className="repo-name";
+ link.href=repo.html_url;
+ link.target="_blank";
+ link.rel="noopener";
+ link.textContent=repo.name;
+
+ const visibility=document.createElement("span");
+ visibility.className="visibility";
+ visibility.textContent=repo.private?"PRIVATE":"PUBLIC";
+
+ const favorite=document.createElement("button");
+ favorite.className="favorite";
+ favorite.textContent=RepoPilot.favorites.has(repo.full_name)?"★":"☆";
+
+ if(RepoPilot.favorites.has(repo.full_name)) {
+  favorite.classList.add("selected");
+ }
+
+ favorite.title="Toggle favorite";
+
+ favorite.addEventListener("click",()=>{
+  toggleFavorite(repo.full_name);
+ });
+
+ header.append(link,visibility,favorite);
+
+ const description=document.createElement("p");
+ description.className="repo-description";
+ description.textContent=repo.description||"No description available.";
+
+ const meta=document.createElement("div");
+ meta.className="repo-meta";
+
+ const language=document.createElement("span");
+
+ if(repo.language) {
+  const dot=document.createElement("span");
+  dot.className="language-dot";
+  language.append(dot,document.createTextNode(repo.language));
+ } else {
+  language.textContent="No language";
+ }
+
+ const stars=document.createElement("span");
+ stars.textContent="★ "+repo.stargazers_count;
+
+ const forks=document.createElement("span");
+ forks.textContent="⑂ "+repo.forks_count;
+
+ const updated=document.createElement("span");
+ updated.textContent=new Date(repo.updated_at).toLocaleDateString();
+
+ meta.append(language,stars,forks,updated);
+
+ card.append(header,description,meta);
+
+ card.addEventListener("dblclick",()=>{
+  openRepository(repo);
+ });
+
+ card.addEventListener("contextmenu",event=>{
+  event.preventDefault();
+  openRepository(repo);
+ });
+
+ return card;
+}
+
+function populateGrid(container,repos) {
+ container.replaceChildren();
+
+ if(!repos.length) {
+  const empty=document.createElement("div");
+  empty.className="empty";
+  empty.textContent="No repositories found.";
+  container.appendChild(empty);
+  return;
+ }
+
+ repos.forEach(repo=>{
+  container.appendChild(createRepoCard(repo));
+ });
+}
+
+function renderRecent() {
+ const repos=[...RepoPilot.repositories]
+  .sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))
+  .slice(0,4);
+
+ populateGrid($("recentRepos"),repos);
+}
+
+/* ========================================
+   REPOSITORY SEARCH AND FILTERS
+======================================== */
+
+function getFilteredRepositories() {
+ const query=$("repoSearch").value.toLowerCase().trim();
+ const language=$("languageFilter").value;
+ const sort=$("sortFilter").value;
+
+ let repos=RepoPilot.repositories.filter(repo=>{
+  const searchable=[
+   repo.name,
+   repo.description||"",
+   repo.language||""
+  ].join(" ").toLowerCase();
+
+  return searchable.includes(query)&&
+   (!language||repo.language===language);
+ });
+
+ const comparators={
+  updated:(a,b)=>new Date(b.updated_at)-new Date(a.updated_at),
+  stars:(a,b)=>b.stargazers_count-a.stargazers_count,
+  forks:(a,b)=>b.forks_count-a.forks_count,
+  name:(a,b)=>a.name.localeCompare(b.name),
+  created:(a,b)=>new Date(b.created_at)-new Date(a.created_at)
+ };
+
+ repos.sort(comparators[sort]||comparators.updated);
+
+ return repos;
+}
+
+function renderRepositories() {
+ const repos=getFilteredRepositories();
+
+ $("repoCount").textContent=
+  repos.length+" of "+RepoPilot.repositories.length+" repositories";
+
+ populateGrid($("repoGrid"),repos);
+}
+
+$("repoSearch").addEventListener("input",renderRepositories);
+$("languageFilter").addEventListener("change",renderRepositories);
+$("sortFilter").addEventListener("change",renderRepositories);
+
+/* ========================================
+   LANGUAGE FILTER
+======================================== */
+
+function renderLanguageOptions() {
+ const languages=[
+  ...new Set(RepoPilot.repositories.map(r=>r.language).filter(Boolean))
+ ].sort();
+
+ const select=$("languageFilter");
+ const previous=select.value;
+
+ select.replaceChildren();
+
+ const all=document.createElement("option");
+ all.value="";
+ all.textContent="All languages";
+ select.appendChild(all);
+
+ languages.forEach(language=>{
+  const option=document.createElement("option");
+  option.value=language;
+  option.textContent=language;
+  select.appendChild(option);
+ });
+
+ select.value=languages.includes(previous)?previous:"";
+}
+
+/* ========================================
+   FAVORITES
+======================================== */
+
+function toggleFavorite(fullName) {
+ if(RepoPilot.favorites.has(fullName)) {
+  RepoPilot.favorites.delete(fullName);
+  toast("Removed from favorites.");
+ } else {
+  RepoPilot.favorites.add(fullName);
+  toast("Added to favorites.");
+ }
+
+ saveFavorites();
+ renderFavoriteCount();
+ renderRecent();
+ renderRepositories();
+
+ if($("page-favorites").classList.contains("active")) {
+  renderFavorites();
+ }
+}
+
+function renderFavoriteCount() {
+ const count=RepoPilot.favorites.size;
+
+ $("favoriteCount").textContent=count;
+ $("favoritePageCount").textContent=count+" saved";
+}
+
+function renderFavorites() {
+ const favorites=RepoPilot.repositories.filter(repo=>
+  RepoPilot.favorites.has(repo.full_name)
+ );
+
+ renderFavoriteCount();
+ populateGrid($("favoriteGrid"),favorites);
+}
+
+/* ========================================
+   LANGUAGE ANALYTICS
+======================================== */
+
+const chartColors=[
+ "#55d69a",
+ "#d6b77d",
+ "#82b9ed",
+ "#a68be3",
+ "#ed8585",
+ "#65c4b3",
+ "#e3a66f",
+ "#90a8b6",
+ "#b1ce79",
+ "#cf92b6"
+];
+
+function destroyChart(name) {
+ if(RepoPilot.charts[name]) {
+  RepoPilot.charts[name].destroy();
+  delete RepoPilot.charts[name];
+ }
+}
+
+function renderChart(name,canvas,config) {
+ if(typeof Chart==="undefined") return;
+
+ destroyChart(name);
+
+ const context=$(canvas).getContext("2d");
+
+ RepoPilot.charts[name]=new Chart(context,config);
+}
+
+function getLanguageData() {
+ const stats=getStatistics();
+
+ return Object.entries(stats.languages)
+  .sort((a,b)=>b[1]-a[1])
+  .slice(0,10);
+}
+
+function renderOverviewChart() {
+ const data=getLanguageData();
+
+ if(!data.length) return;
+
+ renderChart("overview","overviewChart",{
+  type:"doughnut",
+  data:{
+   labels:data.map(x=>x[0]),
+   datasets:[{
+    data:data.map(x=>x[1]),
+    backgroundColor:chartColors,
+    borderColor:"#0b1d14",
+    borderWidth:4,
+    hoverOffset:7
+   }]
+  },
+  options:{
+   maintainAspectRatio:false,
+   responsive:true,
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{
+      color:"#91aa99",
+      padding:13,
+      font:{size:10}
+     }
+    }
+   }
+  }
+ });
+}
+
+function renderAnalytics() {
+ if(!RepoPilot.repositories.length) return;
+
+ const languages=getLanguageData();
+
+ renderChart("languages","languageChart",{
+  type:"doughnut",
+  data:{
+   labels:languages.map(x=>x[0]),
+   datasets:[{
+    data:languages.map(x=>x[1]),
+    backgroundColor:chartColors,
+    borderColor:"#0b1d14",
+    borderWidth:4
+   }]
+  },
+  options:{
+   maintainAspectRatio:false,
+   plugins:{
+    legend:{
+     position:"bottom",
+     labels:{color:"#91aa99",font:{size:10}}
+    }
+   }
+  }
+ });
+
+ const topStars=[...RepoPilot.repositories]
+  .sort((a,b)=>b.stargazers_count-a.stargazers_count)
+  .slice(0,7);
+
+ renderChart("stars","starsChart",{
+  type:"bar",
+  data:{
+   labels:topStars.map(r=>r.name),
+   datasets:[{
+    label:"Stars",
+    data:topStars.map(r=>r.stargazers_count),
+    backgroundColor:"#55d69a",
+    borderRadius:5
+   }]
+  },
+  options:{
+   maintainAspectRatio:false,
+   indexAxis:"y",
+   plugins:{
+    legend:{display:false}
+   },
+   scales:{
+    x:{
+     ticks:{color:"#91aa99"},
+     grid:{color:"#1b3b2b"}
+    },
+    y:{
+     ticks:{color:"#91aa99"},
+     grid:{display:false}
+    }
+   }
+  }
+ });
+
+ const container=$("languageBreakdown");
+ container.replaceChildren();
+
+ const total=languages.reduce((sum,item)=>sum+item[1],0);
+
+ languages.forEach(([name,count],index)=>{
+  const item=document.createElement("div");
+  item.className="language-item";
+
+  const label=document.createElement("span");
+  label.textContent=name;
+
+  const percentage=document.createElement("strong");
+  percentage.textContent=
+   ((count/total)*100).toFixed(1)+"%";
+
+  const track=document.createElement("div");
+  track.className="language-track";
+
+  const fill=document.createElement("div");
+  fill.className="language-fill";
+  fill.style.width=(count/total*100)+"%";
+  fill.style.background=chartColors[index%chartColors.length];
+
+  track.appendChild(fill);
+  item.append(label,percentage,track);
+  container.appendChild(item);
+ });
+}
+
+/* ========================================
+   ACTIVITY
+======================================== */
+
+function createActivityItem(repo) {
+ const item=document.createElement("div");
+ item.className="activity-item";
+
+ const dot=document.createElement("span");
+ dot.className="activity-dot";
+
+ const content=document.createElement("div");
+ content.className="activity-text";
+
+ const strong=document.createElement("strong");
+ strong.textContent=repo.name;
+
+ content.append(
+  document.createTextNode("Repository "),
+  strong,
+  document.createTextNode(" was updated.")
+ );
+
+ const time=document.createElement("span");
+ time.className="activity-time";
+ time.textContent=new Date(repo.updated_at).toLocaleDateString();
+
+ item.append(dot,content,time);
+
+ return item;
+}
+
+function renderActivity() {
+ const sorted=[...RepoPilot.repositories]
+  .sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))
+  .slice(0,30);
+
+ const container=$("activityTimeline");
+ container.replaceChildren();
+
+ if(!sorted.length) {
+  container.textContent="No activity available.";
+  return;
+ }
+
+ sorted.forEach(repo=>{
+  container.appendChild(createActivityItem(repo));
+ });
+}
+
+function renderOverviewActivity() {
+ const container=$("overviewActivity");
+ container.replaceChildren();
+
+ const repos=[...RepoPilot.repositories]
+  .sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at))
+  .slice(0,5);
+
+ if(!repos.length) {
+  container.textContent="No repository activity.";
+  return;
+ }
+
+ repos.forEach(repo=>{
+  container.appendChild(createActivityItem(repo));
+ });
+}
+
+/* ========================================
+   REPOSITORY DETAILS
+======================================== */
+
+function openRepository(repo) {
+ RepoPilot.currentRepository=repo;
+
+ $("modalTitle").textContent=repo.name;
+ $("modalDescription").textContent=
+  repo.description||"No description provided.";
+
+ $("modalStars").textContent=repo.stargazers_count;
+ $("modalForks").textContent=repo.forks_count;
+ $("modalIssues").textContent=repo.open_issues_count;
+
+ $("modalLanguage").textContent=repo.language||"Unknown";
+
+ $("modalUpdated").textContent=
+  new Date(repo.updated_at).toLocaleString();
+
+ $("modalBranch").textContent=repo.default_branch;
+
+ $("modalGithub").href=repo.html_url;
+
+ $("readmeContent").classList.add("hidden");
+ $("readmeContent").textContent="";
+
+ updateModalFavorite();
+
+ $("detailModal").classList.add("open");
+}
+
+function updateModalFavorite() {
+ const repo=RepoPilot.currentRepository;
+
+ if(!repo) return;
+
+ const favorite=RepoPilot.favorites.has(repo.full_name);
+
+ $("modalFavorite").textContent=
+  favorite?"★ Remove favorite":"☆ Add favorite";
+}
+
+$("closeModal").addEventListener("click",()=>{
+ $("detailModal").classList.remove("open");
+});
+
+$("detailModal").addEventListener("click",event=>{
+ if(event.target===$("detailModal")) {
+  $("detailModal").classList.remove("open");
+ }
+});
+
+$("modalFavorite").addEventListener("click",()=>{
+ if(RepoPilot.currentRepository) {
+  toggleFavorite(RepoPilot.currentRepository.full_name);
+  updateModalFavorite();
+ }
+});
+
+/* ========================================
+   README VIEWER
+======================================== */
+
+$("modalReadme").addEventListener("click",async()=>{
+ const repo=RepoPilot.currentRepository;
+
+ if(!repo) return;
+
+ const box=$("readmeContent");
+
+ box.classList.remove("hidden");
+ box.textContent="Loading README...";
+
+ try {
+  const result=await githubRequest(
+   "/repos/"+encodeURIComponent(repo.owner.login)+
+   "/"+encodeURIComponent(repo.name)+"/readme"
+  );
+
+  const response=await fetch(result.download_url);
+
+  if(!response.ok) throw new Error("Could not load README.");
+
+  const content=await response.text();
+
+  box.textContent=content.slice(0,30000);
+
+ } catch(error) {
+  box.textContent=error.message;
+ }
+});
+
+/* ========================================
+   FULL APPLICATION RENDER
+======================================== */
+
+function renderAll() {
+ renderProfile();
+ renderStatistics();
+ renderLanguageOptions();
+ renderRecent();
+ renderRepositories();
+ renderOverviewChart();
+ renderOverviewActivity();
+ renderFavoriteCount();
+}
+
+/* ========================================
+   DISCONNECT
+======================================== */
+
+function disconnect() {
+ RepoPilot.account=null;
+ RepoPilot.username="";
+ RepoPilot.repositories=[];
+ RepoPilot.cache.clear();
+
+ Object.keys(RepoPilot.charts).forEach(destroyChart);
+
+ $("profileCard").style.display="none";
+
+ $("connectionStatus").textContent="● Disconnected";
+ $("connectionStatus").classList.remove("connected");
+
+ ["repoStat","starStat","forkStat","languageStat",
+  "averageStars","originalRepos","forkedRepos",
+  "archivedRepos"].forEach(id=>{
+   $(id).textContent="—";
+  });
+
+ $("recentRepos").innerHTML=
+  '<div class="empty">Connect GitHub to load your projects.</div>';
+
+ $("repoGrid").innerHTML=
+  '<div class="empty">No repositories loaded.</div>';
+
+ $("overviewActivity").innerHTML=
+  '<div class="empty">No activity loaded.</div>';
+
+ $("activityTimeline").innerHTML=
+  '<div class="empty">No activity loaded.</div>';
+
+ $("languageBreakdown").textContent=
+  "Connect GitHub to generate analytics.";
+
+ $("navRepoCount").textContent="—";
+
+ toast("GitHub account disconnected.");
+
+ setMessage("Enter a GitHub username to reconnect.");
+}
+
+/* ========================================
+   DATA EXPORT
+======================================== */
+
+function exportRepositories() {
+ if(!RepoPilot.repositories.length) {
+  toast("Connect an account first.");
+  return;
+ }
+
+ const data={
+  application:"RepoPilot",
+  version:RepoPilot.version,
+  username:RepoPilot.username,
+  exportedAt:new Date().toISOString(),
+  statistics:getStatistics(),
+  repositories:RepoPilot.repositories
+ };
+
+ const blob=new Blob(
+  [JSON.stringify(data,null,2)],
+  {type:"application/json"}
+ );
+
+ const url=URL.createObjectURL(blob);
+
+ const link=document.createElement("a");
+ link.href=url;
+ link.download="repopilot-"+RepoPilot.username+".json";
+
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+
+ URL.revokeObjectURL(url);
+
+ toast("Repository data exported.");
+}
+
+/* ========================================
+   EVENT HANDLERS
+======================================== */
+
+$("connectButton").addEventListener("click",connectGitHub);
+
+$("username").addEventListener("keydown",event=>{
+ if(event.key==="Enter") connectGitHub();
+});
+
+$("quickConnect").addEventListener("click",()=>{
+ $("connectCard").scrollIntoView({behavior:"smooth"});
+ $("username").focus();
+});
+
+$("refreshButton").addEventListener("click",()=>{
+ RepoPilot.cache.clear();
+
+ if(RepoPilot.username) {
+  $("username").value=RepoPilot.username;
+  connectGitHub();
+ } else {
+  toast("Connect GitHub first.");
+ }
+});
+
+$("disconnectButton").addEventListener("click",disconnect);
+
+$("exportButton").addEventListener("click",exportRepositories);
+
+$("clearFavorites").addEventListener("click",()=>{
+ RepoPilot.favorites.clear();
+ saveFavorites();
+ renderFavorites();
+ renderFavoriteCount();
+ renderRecent();
+ renderRepositories();
+ toast("Favorites cleared.");
+});
+
+["rememberUsername","rememberFavorites","autoRefresh"].forEach(id=>{
+ $(id).addEventListener("change",savePreferences);
+});
+
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape") {
+  $("detailModal").classList.remove("open");
+ }
+
+ if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k") {
+  event.preventDefault();
+  navigate("repositories");
+  $("repoSearch").focus();
+ }
+});
+
+/* ========================================
+   INITIALIZATION
+======================================== */
+
+function initialize() {
+ loadPreferences();
+ renderFavoriteCount();
+
+ if($("autoRefresh").checked) {
+  connectGitHub();
+ }
+}
+
+initialize();
+
 </script>
 </body>
 </html>
